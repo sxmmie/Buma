@@ -20,12 +20,13 @@ namespace Buma.Data
         public DbSet<Order> Orders { get; set; }
         public DbSet<Stock> Stocks { get; set; }
         public DbSet<OrderProduct> OrderProducts { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<OrderProduct>()
+                .HasKey(x => new { x.ProductId, x.OrderId });   // ccreating a composite key consisting of Order & Product unique Ids (a new objeect)
+        }
     }
 
-    protected override void OnModelCreating(ModelBuilder modelBuilder)
-    {
-        base.OnModelCreating(modelBuilder);
-        modelBuilder.Entity<OrderProduct>()
-            .HasKey(x => new { x.ProductId, x.OrderId });   // ccreating a composite key consisting of Order & Product unique Ids (a new objeect)
-    }
 }

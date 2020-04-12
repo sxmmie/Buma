@@ -21,10 +21,11 @@ namespace Buma.UI.Pages
 
         [BindProperty]
         public ProductViewModel Product { get; set; }
+        public IEnumerable<GetProductViewModel> Products { get; set; }
 
         public void OnGet()
         {
-
+            new GetProducts(_ctx).Do();
         }
 
         public async Task<IActionResult> OnPost()

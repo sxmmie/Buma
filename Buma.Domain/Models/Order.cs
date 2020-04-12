@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace Buma.Domain.Models
 {
-    public class Product
+    public class Order
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Description { get; set; }
-        public decimal Value { get; set; }
+        public string OrderRef { get; set; }
 
-        public ICollection<Stock> Stock { get; set; }
+        public string Address1 { get; set; }
+        public string Address2 { get; set; }
+        public string PostCode { get; set; }
+
         public ICollection<OrderProduct> OrderProducts { get; set; }
     }
 }

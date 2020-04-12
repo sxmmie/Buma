@@ -1,4 +1,5 @@
-﻿using Buma.Data;
+﻿using Buma.Application.Products.ViewModels;
+using Buma.Data;
 using Buma.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -17,13 +18,13 @@ namespace Buma.Application.Products
             _context = context;
         }
 
-        public async Task Do(string name, string description, decimal value)
+        public async Task Do(ProductViewModel vm)
         {
             _context.Products.Add(new Product
             {
-                Name = name,
-                Description = description,
-                Value = value
+                Name = vm.Name,
+                Description = vm.Description,
+                Value = vm.Value
             });
 
             await _context.SaveChangesAsync();

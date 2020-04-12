@@ -9,4 +9,9 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Buma.Application\Buma.Application.csproj" />
+    <ProjectReference Include="..\Buma.Data\Buma.Data.csproj" />
+  </ItemGroup>
+
 </Project>

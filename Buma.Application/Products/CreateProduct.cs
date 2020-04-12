@@ -17,14 +17,16 @@ namespace Buma.Application.Products
             _context = context;
         }
 
-        public void Do(int id, string name, string description)
+        public async Task Do(string name, string description, decimal value)
         {
             _context.Products.Add(new Product
             {
-                Id = id,
                 Name = name,
-                Description = description
+                Description = description,
+                Value = value
             });
+
+            await _context.SaveChangesAsync();
         }
     }
 }

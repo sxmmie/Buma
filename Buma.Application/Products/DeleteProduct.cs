@@ -8,6 +8,5 @@ namespace Buma.Application.Products
 {
     public class DeleteProduct
     {
-        \
     }
 }

@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Buma.Application.Products
+namespace Buma.Application.ProductsAdmin
 {
     public class CreateProduct
     {

@@ -18,16 +18,26 @@ namespace Buma.Application.ProductsAdmin
             _context = context;
         }
 
-        public async Task Do(ProductViewModel vm)
+        public async Task<Response> Do(Request request)
         {
-            _context.Products.Add(new Product
+            var product = new Product
             {
-                Name = vm.Name,
-                Description = vm.Description,
-                Value = vm.Value
-            });
+                Name = request.Name,
+                Description = request.Description,
+                Value = request.Value
+            };
+
+            _context.Products.Add(product);
 
             await _context.SaveChangesAsync();
+
+            return new Response
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Description = product.Description,
+                Value = product.Value
+            };
         }
     }
 }

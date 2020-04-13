@@ -3,13 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29424.173
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buma.UI", "Buma.UI\Buma.UI.csproj", "{B89D8460-D0EA-4796-A2B7-CBE3304F3D28}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buma.UI", "Buma.UI\Buma.UI.csproj", "{B89D8460-D0EA-4796-A2B7-CBE3304F3D28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buma.Application", "Buma.Application\Buma.Application.csproj", "{EB87612D-34A3-4AE2-A7FA-4A7675B35DE8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buma.Application", "Buma.Application\Buma.Application.csproj", "{EB87612D-34A3-4AE2-A7FA-4A7675B35DE8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buma.Domain", "Buma.Domain\Buma.Domain.csproj", "{19FA9F4E-0600-4A7E-9BAD-E1CEA707B138}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buma.Domain", "Buma.Domain\Buma.Domain.csproj", "{19FA9F4E-0600-4A7E-9BAD-E1CEA707B138}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Buma.Data", "Buma.Data\Buma.Data.csproj", "{AFD368CF-E7C4-48E3-8531-2642628C57EF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Buma.Data", "Buma.Data\Buma.Data.csproj", "{AFD368CF-E7C4-48E3-8531-2642628C57EF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

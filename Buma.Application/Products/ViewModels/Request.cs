@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.Products.ViewModels
 {
-    public class ProductViewModel
+    public class Request
     {
         public string Name { get; set; }
         public string Description { get; set; }

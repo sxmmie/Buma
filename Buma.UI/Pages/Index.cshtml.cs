@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Buma.Application.Products;
 using Buma.Application.Products.ViewModels;
+using Buma.Application.ProductsAdmin;
 using Buma.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -25,7 +26,7 @@ namespace Buma.UI.Pages
 
         public void OnGet()
         {
-            new GetProducts(_ctx).Do();
+            Products = new GetProducts(_ctx).Do();
         }
 
         public async Task<IActionResult> OnPost()

@@ -1,5 +1,4 @@
-﻿using Buma.Application.Products.ViewModels;
-using Buma.Data;
+﻿using Buma.Data;
 using Buma.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -38,6 +37,21 @@ namespace Buma.Application.ProductsAdmin
                 Description = product.Description,
                 Value = product.Value
             };
+        }
+
+        public class Request
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public decimal Value { get; set; }
+        }
+
+        public class Response
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public decimal Value { get; set; }
         }
     }
 }

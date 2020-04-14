@@ -1,5 +1,4 @@
-﻿using Buma.Application.Products.ViewModels;
-using Buma.Application.ProductsAdmin;
+﻿using Buma.Application.ProductsAdmin;
 using Buma.Data;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -27,13 +26,21 @@ namespace Buma.UI.Controllers
         public IActionResult GetProduct(int id) => Ok(new GetProduct(_ctx).Do(id));
 
         [HttpPost("products")]
-        public async Task<IActionResult> CreateProduct([FromBody] Request request) => Ok((await new CreateProduct(_ctx).Do(request)));
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProduct.Request request)
+        {
+            return Ok((await new CreateProduct(_ctx).Do(request)));
+        }
 
         [HttpDelete("products/{id}")]
-        public async Task<IActionResult> DeleteProduct(int id) => Ok((await new DeleteProduct(_ctx).Do(id)));
+        public async Task<IActionResult> DeleteProduct(int id)
+        {
+            return Ok((await new DeleteProduct(_ctx).Do(id)));
+        }
 
         [HttpPut("products")]
-        public async Task<IActionResult> UpdateProduct([FromBody] Request request) => Ok((await new UpdateProduct(_ctx).Do(request)));
-    
+        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProduct.Request request)
+        {
+            return Ok((await new UpdateProduct(_ctx).Do(request)));
+        }
     }
 }

@@ -21,7 +21,7 @@ namespace Buma.UI.Pages
         }
 
         [BindProperty]
-        public ProductViewModel Product { get; set; }
+        public Request Product { get; set; }
         public IEnumerable<GetProductViewModel> Products { get; set; }
 
         public void OnGet()

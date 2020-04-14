@@ -1,0 +1,26 @@
+﻿@page
+@model Buma.UI.Pages.Admin.IndexModel
+@{
+}
+
+
+<div id="app">
+    <button v-on:click="getProducts">Get Products</button>
+    <div>
+        <p v-for="product in products">
+            {{product.id}} - {{product.name}} - {{product.descriptiom}} - {{product.value}}
+        </p>
+    </div>
+    <div>
+        <input v-model="productModel.name" />
+        <input v-model="productModel.description" />
+        <input v-model="productModel.value" />
+        <button @@click="createProduct" class="">Create Product</button>
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="~/js/Admin/main.js"></script>
+}

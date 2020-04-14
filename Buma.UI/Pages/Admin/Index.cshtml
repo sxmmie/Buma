@@ -4,23 +4,28 @@
 }
 
 
-<div id="app">
-    <button v-on:click="getProducts">Get Products</button>
-    <div>
-        <p v-for="product in products">
-            {{product.id}} - {{product.name}} - {{product.descriptiom}} - {{product.value}}
-        </p>
-    </div>
-    <div>
-        <input v-model="productModel.name" />
-        <input v-model="productModel.description" />
-        <input v-model="productModel.value" />
-        <button @@click="createProduct" class="">Create Product</button>
+<div id="app" class="container">
+    <div class="columns">
+        <div class="column is-3">
+            <div class="menu">
+                <p class="menu-label">Admin Menu</p>
+                <ul class="menu-list">
+                    <li><a>Products</a></li>
+                    <li><a>Orders</a></li>
+                    <li><a>Stock</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="column is-9">
+            <product-manager></product-manager>
+        </div>
     </div>
 </div>
 
 @section scripts {
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="~/js/Admin/main.js"></script>
+    <script src="~/js/admin/product-component.js"></script>
+    <script src="~/js/admin/"></script>
 }

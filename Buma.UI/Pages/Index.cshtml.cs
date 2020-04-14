@@ -8,6 +8,7 @@ using Buma.Application.ProductsAdmin;
 using Buma.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using static Buma.Application.ProductsAdmin.CreateProduct;
 
 namespace Buma.UI.Pages
 {

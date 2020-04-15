@@ -19,6 +19,11 @@ namespace Buma.Application.ProductsAdmin
 
         public async Task<Response> Do(Request request)
         {
+            if (request == null)
+            {
+                throw new ArgumentNullException(nameof(request));
+            }
+
             var product = new Product
             {
                 Name = request.Name,

@@ -1,4 +1,5 @@
 ﻿using Buma.Application.ProductsAdmin;
+using Buma.Application.StockAdmin;
 using Buma.Data;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -19,6 +20,7 @@ namespace Buma.UI.Controllers
             _ctx = ctx;
         }
 
+        // Products
         [HttpGet("products")]
         public IActionResult GetProducts() => Ok(new GetProducts(_ctx).Do());
 
@@ -41,6 +43,28 @@ namespace Buma.UI.Controllers
         public async Task<IActionResult> UpdateProduct([FromBody] UpdateProduct.Request request)
         {
             return Ok((await new UpdateProduct(_ctx).Do(request)));
+        }
+
+        // Stock
+        [HttpGet("stocks")]
+        public IActionResult GetStock() => Ok(new GetStock(_ctx).Do());
+
+        [HttpPost("stocks")]
+        public async Task<IActionResult> CreateStock([FromBody] CreateStock.Request request)
+        {
+            return Ok((await new CreateStock(_ctx).Do(request)));
+        }
+
+        [HttpDelete("stocks/{id}")]
+        public async Task<IActionResult> DeleteStock(int id)
+        {
+            return Ok((await new DeleteStock(_ctx).Do(id)));
+        }
+
+        [HttpPut("stocks")]
+        public async Task<IActionResult> UpdateStock([FromBody] UpdateStock.Request request)
+        {
+            return Ok((await new UpdateStock(_ctx).Do(request)));
         }
     }
 }

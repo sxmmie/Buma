@@ -1,4 +1,4 @@
-﻿using Buma.Application.Products.ViewModels;
+﻿using Buma.Application.Products;
 using Buma.Data;
 using System;
 using System.Collections.Generic;
@@ -17,9 +17,9 @@ namespace Buma.Application.ProductsAdmin
             _context = context;
         }
 
-        public GetProductViewModel Do(int id)
+        public ProductViewModel Do(int id)
         {
-            var product = _context.Products.Where(x => x.Id == id).Select(x => new GetProductViewModel
+            var product = _context.Products.Where(x => x.Id == id).Select(x => new ProductViewModel
             {
                 Id = x.Id,
                 Name = x.Name,
@@ -29,6 +29,14 @@ namespace Buma.Application.ProductsAdmin
              .FirstOrDefault();
 
             return product;
+        }
+
+        public class ProductViewModel
+        {
+            public int Id { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public decimal Value { get; set; }
         }
     }
 }

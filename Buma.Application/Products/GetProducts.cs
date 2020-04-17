@@ -1,12 +1,11 @@
-﻿using Buma.Application.Products;
-using Buma.Data;
+﻿using Buma.Data;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Buma.Application.ProductsAdmin
+namespace Buma.Application.Products
 {
     public class GetProducts
     {

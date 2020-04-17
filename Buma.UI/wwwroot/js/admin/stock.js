@@ -7,7 +7,7 @@
         newStock: {
             productId: 0,
             description: "Size",
-            Qty: 10
+            qty: 10
         }
     },
     mounted() {
@@ -40,16 +40,16 @@
                     };
                 })
             })
-                .then(res => {
-                    console.log(res);
-                    this.selectedProduct.stock.splice(index, 1);
-                })
-                .catch(err => {
-                    console.log(err);
-                })
-                .then(() => {
-                    this.loadiing = true;
-                });
+            .then(res => {
+                console.log(res);
+                this.selectedProduct.stock.splice(index, 1);
+            })
+            .catch(err => {
+                console.log(err);
+            })
+            .then(() => {
+                this.loadiing = true;
+            });
         },
         deleteStock(id, index) {
             this.loading = true;

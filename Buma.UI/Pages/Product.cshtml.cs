@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Buma.Application.Products;
 using Buma.Data;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 
@@ -18,6 +19,14 @@ namespace Buma.UI.Pages
             _ctx = ctx;
         }
 
+        [BindProperty]
+        public Test ProductTest { get; set; }
+
+        public class Test
+        {
+            public string Id { get; set; }
+        }
+
         public GetProduct.ProductViewModel Product { get; set; }
 
         public IActionResult OnGet(string name)
@@ -27,6 +36,13 @@ namespace Buma.UI.Pages
                 return RedirectToPage("Index");
             else
                 return Page();
+        }
+
+        public IActionResult OnPost()
+        {
+            var current_id = HttpContext.Session.GetString("id");
+            HttpContext.Session.SetString("id", ProductTest.Id);
+            return RedirectToPage("Index");
         }
     }
 }

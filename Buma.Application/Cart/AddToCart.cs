@@ -1,7 +1,7 @@
 ﻿using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
+using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -23,17 +23,19 @@ namespace Buma.Application.Cart
             var cartList = new List<CartProduct>();            
             var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
 
-            if(!string.IsNullOrEmpty(stringObject))     // if cart isn't null
+            if (!string.IsNullOrEmpty(stringObject))     // if cart isn't null
             {
-                cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);
+                cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);  // set cart to what it is currently is
             }
 
-            if(cartList.Any(x => x.StockId == request.StockId))
+            // if cart list has stock, 
+            if (cartList.Any(x => x.StockId == request.StockId))
             {
-                cartList.Find(x => x.StockId == request.StockId).Qty += request.Qty;
+                cartList.Find(x => x.StockId == request.StockId).Qty += request.Qty;    // FInd stock item and append Qty
             }
             else
             {
+                // Otherwise add CartProduct to cartList
                 cartList.Add(new CartProduct
                 {
                     StockId = request.StockId,

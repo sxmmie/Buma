@@ -3,22 +3,26 @@
 @{
 }
 
+<div>
+    <p>@Model.Product.Name</p>
+    <p>@Model.Product.Description</p>
+    <p>@Model.Product.Value</p>
     <div>
-        <p>@Model.Product.Name</p>
-        <p>@Model.Product.Description</p>
-        <p>@Model.Product.Value</p>
-        <div>
-            <form method="post">
-                <label>Stock</label>
-                <select asp-for="CartViewModel.StockId">
-                    @foreach (var s in Model.Product.Stock)
-                    {
-                        <option value="@s.Id"></option>
-                    }
-                </select>
-                <label>Qty</label>
-                <input asp-action="CartModelView.Qty" />
-                <button type="submit">Submit</button>
-            </form>
-        </div>
+        <form method="post">
+            <label>Stock</label>
+            <select asp-for="CartViewModel.StockId">
+                @foreach (var s in Model.Product.Stock)
+                {
+                    <option value="@s.Id">@s.Description</option>
+                }
+            </select>
+            <label>Qty:</label>
+            <input asp-action="CartModelView.Qty" />
+            <button type="submit">Submit</button>
+        </form>
     </div>
+</div>
+
+@*<vc:cart view="Cart"></vc:cart>*@
+
+@await Component.InvokeAsync("Cart")

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Buma.Application.Cart;
 using Buma.Application.Products;
 using Buma.Data;
 using Microsoft.AspNetCore.Http;
@@ -20,12 +21,7 @@ namespace Buma.UI.Pages
         }
 
         [BindProperty]
-        public Test ProductTest { get; set; }
-
-        public class Test
-        {
-            public string Id { get; set; }
-        }
+        public AddToCart.Request CartViewModel { get; set; }
 
         public GetProduct.ProductViewModel Product { get; set; }
 
@@ -40,8 +36,8 @@ namespace Buma.UI.Pages
 
         public IActionResult OnPost()
         {
-            var current_id = HttpContext.Session.GetString("id");
-            HttpContext.Session.SetString("id", ProductTest.Id);
+            new AddToCart(HttpContext.Session).Do(CartViewModel);
+
             return RedirectToPage("Index");
         }
     }

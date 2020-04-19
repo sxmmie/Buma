@@ -20,14 +20,29 @@ namespace Buma.Application.Cart
 
         public void Do(Request request)
         {
-            var cartProduct = new CartProduct
+            var cartList = new List<CartProduct>();            
+            var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
+
+            if(!string.IsNullOrEmpty(stringObject))     // if cart isn't null
             {
-                StockId = request.StockId,
-                Qty = request.Qty
-            };
+                cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);
+            }
+
+            if(cartList.Any(x => x.StockId == request.StockId))
+            {
+                cartList.Find(x => x.StockId == request.StockId).Qty += request.Qty;
+            }
+            else
+            {
+                cartList.Add(new CartProduct
+                {
+                    StockId = request.StockId,
+                    Qty = request.Qty
+                });
+            }
 
             // convert the object to string
-            var stringObject = JsonConvert.SerializeObject(cartProduct);
+            stringObject = JsonConvert.SerializeObject(cartList);
 
             _session.SetString("cart", stringObject);
         }

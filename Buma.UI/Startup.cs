@@ -40,7 +40,7 @@ namespace Buma.UI
 
             services.AddSession(options => 
             {
-                options.Cookie.Name = "Cart";
+                options.Cookie.Name = "CartProduct";
                 options.Cookie.MaxAge = TimeSpan.FromDays(365);
             });
         }

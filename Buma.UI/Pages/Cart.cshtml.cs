@@ -18,7 +18,7 @@ namespace Buma.UI.Pages
             _ctx = ctx;
         }
 
-        public GetCart.Response Cart { get; set; }
+        public IEnumerable<GetCart.Response> Cart { get; set; }
 
         public IActionResult OnGet()
         {

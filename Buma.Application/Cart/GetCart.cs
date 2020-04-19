@@ -22,14 +22,6 @@ namespace Buma.Application.Cart
             _ctx = ctx;
         }
 
-        public class Response
-        {
-            public string Name { get; set; }
-            public string Value { get; set; }
-            public int StockId { get; set; }
-            public int Qty { get; set; }
-        }
-
         public IEnumerable<Response> Do()
         {
             // TODO: Account for multiple items in the cart
@@ -37,9 +29,7 @@ namespace Buma.Application.Cart
             var stringObject = _session.GetString("cart");
 
             if (string.IsNullOrEmpty(stringObject))
-            {
                 return new List<Response>();
-            }
 
             var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);
 
@@ -56,6 +46,14 @@ namespace Buma.Application.Cart
                 .ToList();
 
             return response;
+        }
+
+        public class Response
+        {
+            public string Name { get; set; }
+            public string Value { get; set; }
+            public int StockId { get; set; }
+            public int Qty { get; set; }
         }
     }
 }

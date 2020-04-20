@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Stripe;
 
 namespace Buma.UI
 {
@@ -43,6 +44,8 @@ namespace Buma.UI
                 options.Cookie.Name = "CartProduct";
                 options.Cookie.MaxAge = TimeSpan.FromDays(365);
             });
+
+            StripeConfiguration.ApiKey = _config.GetSection("Stripe")["SecretKey"];
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

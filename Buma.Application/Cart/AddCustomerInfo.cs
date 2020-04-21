@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using System;
@@ -21,7 +22,21 @@ namespace Buma.Application.Cart
 
         public void Do(Request request)
         {
-            var stringObject = JsonConvert.SerializeObject(request);
+            // get user info
+            var customerInformation = new CustomerInformation
+            {
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Email = request.Email,
+                PhoneNumber = request.PhoneNumber,
+                Address1 = request.Address1,
+                Address2 = request.Address2,
+                City = request.City,
+                PostCode = request.PostCode
+            };
+
+            // serialize customer info
+            var stringObject = JsonConvert.SerializeObject(customerInformation);
 
             _session.SetString("customer-info", stringObject);
         }
@@ -30,14 +45,11 @@ namespace Buma.Application.Cart
         {
             [Required]
             public string FirstName { get; set; }
-
             [Required]
             public string LastName { get; set; }
-
             [Required]
             [DataType(DataType.EmailAddress)]
             public string Email { get; set; }
-
             [Required]
             [DataType(DataType.PhoneNumber)]
             public string PhoneNumber { get; set; }
@@ -45,10 +57,8 @@ namespace Buma.Application.Cart
             [Required]
             public string Address1 { get; set; }
             public string Address2 { get; set; }
-
             [Required]
             public string City { get; set; }
-
             [Required]
             public string PostCode { get; set; }
         }

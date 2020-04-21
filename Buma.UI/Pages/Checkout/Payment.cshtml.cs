@@ -44,7 +44,7 @@ namespace Buma.UI.Pages.Checkout
             var customer = customers.Create(new CustomerCreateOptions
             {
                 Email = stripeEmail,
-                SourceToken = stripeToken
+                Source = stripeToken
             });
 
             var charge = charges.Create(new ChargeCreateOptions

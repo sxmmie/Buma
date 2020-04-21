@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Buma.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20200413163438_BumaModels")]
-    partial class BumaModels
+    [Migration("20200421015456_OrderStock")]
+    partial class OrderStock
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -31,9 +31,21 @@ namespace Buma.Data.Migrations
 
                     b.Property<string>("Address2");
 
+                    b.Property<string>("City");
+
+                    b.Property<string>("Email");
+
+                    b.Property<string>("FirstName");
+
+                    b.Property<string>("LastName");
+
                     b.Property<string>("OrderRef");
 
+                    b.Property<string>("PhoneNumber");
+
                     b.Property<string>("PostCode");
+
+                    b.Property<string>("StripeReference");
 
                     b.HasKey("Id");
 
@@ -42,15 +54,17 @@ namespace Buma.Data.Migrations
 
             modelBuilder.Entity("Buma.Domain.Models.OrderStock", b =>
                 {
-                    b.Property<int>("ProductId");
+                    b.Property<int>("StockId");
 
                     b.Property<int>("OrderId");
 
-                    b.HasKey("ProductId", "OrderId");
+                    b.Property<int>("Qty");
+
+                    b.HasKey("StockId", "OrderId");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderProducts");
+                    b.ToTable("OrderStocks");
                 });
 
             modelBuilder.Entity("Buma.Domain.Models.Product", b =>
@@ -253,13 +267,13 @@ namespace Buma.Data.Migrations
             modelBuilder.Entity("Buma.Domain.Models.OrderStock", b =>
                 {
                     b.HasOne("Buma.Domain.Models.Order", "Order")
-                        .WithMany("OrderProducts")
+                        .WithMany("OrderStocks")
                         .HasForeignKey("OrderId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("Buma.Domain.Models.Product", "Product")
-                        .WithMany("OrderProducts")
-                        .HasForeignKey("ProductId")
+                    b.HasOne("Buma.Domain.Models.Stock", "Stock")
+                        .WithMany("OrderStocks")
+                        .HasForeignKey("StockId")
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 

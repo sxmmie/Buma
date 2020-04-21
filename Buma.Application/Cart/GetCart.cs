@@ -45,6 +45,9 @@ namespace Buma.Application.Cart
                 })
                 .ToList();
 
+            // get customer info
+            var customerInfoString = _session.GetString("customer-info");
+
             return response;
         }
 
@@ -55,5 +58,6 @@ namespace Buma.Application.Cart
             public int StockId { get; set; }
             public int Qty { get; set; }
         }
+
     }
 }

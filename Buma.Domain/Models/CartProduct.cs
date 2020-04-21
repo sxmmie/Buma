@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Domain.Models
 {
+    // List of cart product
     public class CartProduct
     {
         public int StockId { get; set; }

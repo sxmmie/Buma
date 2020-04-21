@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Buma.Application.Cart;
+using Buma.Data;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -12,12 +13,14 @@ namespace Buma.UI.Pages.Checkout
 {
     public class PaymentModel : PageModel
     {
-        public PaymentModel(IConfiguration config)
+        private readonly ApplicationDbContext _ctx;
+        public string PublicKey { get; set; }
+
+        public PaymentModel(IConfiguration config, ApplicationDbContext ctx)
         {
             PublicKey = config["Stripe:PublicKey"].ToString();
+            _ctx = ctx;
         }
-
-        public string PublicKey { get; set; }
 
         public IActionResult OnGet()
         {
@@ -36,16 +39,18 @@ namespace Buma.UI.Pages.Checkout
             var customers = new CustomerService();
             var charges = new ChargeService();
 
+            var cardOrder = new GetOrder(HttpContext.Session, _ctx).Do();
+
             var customer = customers.Create(new CustomerCreateOptions
             {
                 Email = stripeEmail,
-                SourceToken = stripeToken
+                Source = stripeToken
             });
 
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = 500,
-                Description = "Sample Charge",
+                Amount = cardOrder.GetGetTotalCharge(),
+                Description = "Buma Purchase",
                 Currency = "usd",
                 Customer = customer.Id
             });

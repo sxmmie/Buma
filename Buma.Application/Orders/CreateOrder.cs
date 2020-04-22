@@ -19,6 +19,14 @@ namespace Buma.Application.Orders
 
         public async Task<bool> Do(Request request)
         {
+            // Get list of stock from DB
+            var stocksTopdate = _ctx.Stocks.Where(x => request.Stocks.Any(y => y.StockId == x.Id)).ToList();
+
+            foreach (var stock in stocksTopdate)
+            {
+                stock.Id = request.Stocks.FirstOrDefault(x => x.StockId == stock.Id).Qty;
+            }
+                
             var order = new Order
             {
                 OrderRef = CreateOrderReference(),

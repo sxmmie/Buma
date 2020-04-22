@@ -1,0 +1,15 @@
+﻿@page
+@model Buma.UI.Pages.OrderModel
+@{
+}
+
+<div>
+    <h2>@Model.Order.OrderRef</h2>
+
+    @foreach (var product in Model.Order.Products)
+    {
+        <div>
+            @product.Name - @product.Description- @product.Value - @product.Qty
+        </div>
+    }
+</div>

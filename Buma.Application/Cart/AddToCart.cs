@@ -6,20 +6,41 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Buma.Data;
 
 namespace Buma.Application.Cart
 {
     public class AddToCart
     {
         private readonly ISession _session;
+        private readonly ApplicationDbContext _ctx;
 
-        public AddToCart(ISession session)
+        public AddToCart(ISession session, ApplicationDbContext ctx)
         {
             _session = session;
+            _ctx = ctx;
         }
 
-        public void Do(Request request)
+        public async Task<bool> Do(Request request)
         {
+            var stockOnHold = _ctx.Stocks.Where(x => x.Id == request.StockId).FirstOrDefault();
+
+            if(stockOnHold.Qty < request.Qty)
+            {
+                return false;
+            }
+
+            _ctx.StocksOnHold.Add(new StockOnHold
+            {
+                StockId = stockOnHold.Id,
+                Qty = request.Qty,
+                ExpiryDate = DateTimeOffset.Now.AddMinutes(20)
+            });
+
+            stockOnHold.Qty = stockOnHold.Qty - request.Qty;
+
+            await _ctx.SaveChangesAsync();
+
             var cartList = new List<CartProduct>();            
             var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
 
@@ -47,6 +68,8 @@ namespace Buma.Application.Cart
             stringObject = JsonConvert.SerializeObject(cartList);
 
             _session.SetString("cart", stringObject);
+
+            return true;
         }
 
         public class Request

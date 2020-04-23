@@ -17,8 +17,27 @@ namespace Buma.Application.Products
             _ctx = ctx;
         }
 
-        public ProductViewModel Do(string name)
+        public async Task<ProductViewModel> Do(string name)
         {
+            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.ExpiryDate <= DateTimeOffset.Now).ToList();
+
+            if (stocksOnHold.Count > 0)
+            {
+                // Remove stock and put it back into our actual stock
+                var stockToReturn = _ctx.Stocks.Where(x => stocksOnHold.Any(y => y.StockId == x.Id)).ToList();
+
+                foreach(var stock in stockToReturn)
+                {
+                    // restore Qty
+                    stock.Qty = stock.Qty + stocksOnHold.FirstOrDefault(x => x.StockId == stock.Id).Qty;
+                }
+
+                // Go to the StocksOnHold and remove stock
+                _ctx.StocksOnHold.RemoveRange(stocksOnHold);
+
+                await _ctx.SaveChangesAsync();
+            }
+
             return _ctx.Products
                 .Include(x => x.Stock)
                 .Where(x => x.Name == name)

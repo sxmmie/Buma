@@ -20,12 +20,14 @@ namespace Buma.Application.Orders
         public async Task<bool> Do(Request request)
         {
             // Get list of stock from DB
-            var stocksTopdate = _ctx.Stocks.Where(x => request.Stocks.Any(y => y.StockId == x.Id)).ToList();
+            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == request.SessionId).ToList();
 
-            foreach (var stock in stocksTopdate)
+            _ctx.StocksOnHold.RemoveRange(stockOnHold);
+
+            /*foreach (var stock in stockOnHold)
             {
                 stock.Id = request.Stocks.FirstOrDefault(x => x.StockId == stock.Id).Qty;
-            }
+            }*/
                 
             var order = new Order
             {
@@ -71,6 +73,7 @@ namespace Buma.Application.Orders
         public class Request
         {
             public string StripeReference { get; set; }
+            public string SessionId { get; set; }
 
             public string FirstName { get; set; }
             public string LastName { get; set; }

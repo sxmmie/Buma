@@ -23,21 +23,29 @@ namespace Buma.Application.Cart
 
         public async Task<bool> Do(Request request)
         {
-            var stockOnHold = _ctx.Stocks.Where(x => x.Id == request.StockId).FirstOrDefault();
+            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _session.Id).ToList();
+            var stockToHold = _ctx.Stocks.Where(x => x.Id == request.StockId).FirstOrDefault();
 
-            if(stockOnHold.Qty < request.Qty)
+            if(stockToHold.Qty < request.Qty)
             {
                 return false;
             }
 
             _ctx.StocksOnHold.Add(new StockOnHold
             {
-                StockId = stockOnHold.Id,
+                StockId = stockToHold.Id,
+                SessionId = _session.Id,
                 Qty = request.Qty,
                 ExpiryDate = DateTimeOffset.Now.AddMinutes(20)
             });
 
-            stockOnHold.Qty = stockOnHold.Qty - request.Qty;
+            stockToHold.Qty = stockToHold.Qty - request.Qty;
+
+            // Anytime a new item is added, update the expiry time
+            foreach (var stock in stockOnHold)
+            {
+                stock.ExpiryDate = DateTimeOffset.Now.AddMinutes(20);
+            }
 
             await _ctx.SaveChangesAsync();
 

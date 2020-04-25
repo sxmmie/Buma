@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Buma.Application.UsersAdmin;
 using Buma.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -54,7 +55,9 @@ namespace Buma.UI
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "Admin"));
-                options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "Manager"));
+                //options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "Manager"));
+                options.AddPolicy("Manager", policy => policy
+                    .RequireAssertion(context => context.User.HasClaim("Role", "Manager") || context.User.HasClaim("Role", "Admin")));
             });
 
             services
@@ -62,6 +65,7 @@ namespace Buma.UI
                 .AddRazorPagesOptions(options =>
                 {
                     options.Conventions.AuthorizeFolder("/Admin");
+                    options.Conventions.AuthorizePage("/Admin/ConfigureUsers", "Admin");
                 })
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
@@ -72,6 +76,8 @@ namespace Buma.UI
             });
 
             StripeConfiguration.ApiKey = _config.GetSection("Stripe")["SecretKey"];
+
+            services.AddTransient<CreateUser>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

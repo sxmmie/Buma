@@ -48,14 +48,14 @@ namespace Buma.UI
                         userManager.CreateAsync(adminUser, "password").GetAwaiter().GetResult();
                         userManager.CreateAsync(managerUser, "password").GetAwaiter().GetResult();
 
-                        // How do you know whose an adminuser and whose managerUser? -> claims
+                        /*// How do you know whose an adminuser and whose managerUser? -> claims
                         // Claims are what the user has, used to describe the user (users contain claims), roles contain a user.
                         // A claim is a key-value pair, added 2 users and gave then claims that define their roles
                         var adminClaim = new Claim("Role", "Admin");
                         var managerClaim = new Claim("Role", "Manager");
 
                         userManager.AddClaimAsync(adminUser, adminClaim).GetAwaiter().GetResult();
-                        userManager.AddClaimAsync(managerUser, managerClaim).GetAwaiter().GetResult();
+                        userManager.AddClaimAsync(managerUser, managerClaim).GetAwaiter().GetResult();*/
                     }
                 }
             } 

@@ -1,0 +1,13 @@
+﻿@page
+@model Buma.UI.Pages.Admin.ConfigureUsersModel
+@{
+}
+
+<div id="app" class="container">
+    <input v-model="username" />
+    <button @@click="createuser()">Create</button>
+</div>
+
+@section scripts {
+    <scripts src="~/js/admin/users.js"></scripts>
+}

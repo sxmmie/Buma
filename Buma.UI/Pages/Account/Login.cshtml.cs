@@ -31,7 +31,8 @@ namespace Buma.UI.Pages.Account
             if (result.Succeeded)
             {
                 return RedirectToPage("/Admin/Index");
-            } else
+            }
+            else
             {
                 return Page();
             }

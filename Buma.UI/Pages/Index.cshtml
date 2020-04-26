@@ -4,15 +4,32 @@
     ViewData["Title"] = "Home page";
 }
 
-<div>
-    @{
-        foreach (var p in Model.Products)
-        {
-            <a asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
-                <p>@p.Name - @p.Description - @p.Value</p>
-            </a>
+    <div>
+        @{
+            foreach (var p in Model.Products)
+            {
+                <div class="card" asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
+                    <div class="card-image">
+                        <figure class="image is-4by3">
+                            <img href="~/images/download.jfif">
+                            @*<img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">*@
+                        </figure>
+                    </div>
+                    <div class="card-content">
+                        <p class="title">
+                            @p.Name - @p.Value
+                        </p>
+                        <p class="title">
+                            @p.Description
+                        </p>
+                        <div class="content">
+                        </div>
+                    </div>
+                </div>
+                <a >
+                </a>
+            }
         }
-    }
-</div>
+    </div>
 
 @await Component.InvokeAsync("Cart")

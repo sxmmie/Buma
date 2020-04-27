@@ -45,7 +45,7 @@ namespace Buma.Application.Products
                 {
                     Name = x.Name,
                     Description = x.Description,
-                    Value = $"$ {x.Value.ToString("2")}",
+                    Value = $"${x.Value.ToString("2")}",
 
                     Stock = x.Stock.Select(y => new StockViewModel
                     {

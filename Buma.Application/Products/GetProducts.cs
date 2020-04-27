@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,16 +19,15 @@ namespace Buma.Application.Products
 
         public IEnumerable<ProductViewModel> Do()
         {
-            return _ctx.Products.ToList().Select(x =>
-            {
-                var v = $"${x.Value.ToString("2")}";
-                return new ProductViewModel
+            return _ctx.Products
+                .Include(x => x.Stock)
+                .Select(x => new ProductViewModel
                 {
                     Name = x.Name,
                     Description = x.Description,
-                    Value = v
-                };
-            });
+                    Value = $"${x.Value.ToString("2")}",        // 1100.50 => 1,000.50 => 1,000.50
+                    StockCount = x.Stock.Sum(y => y.Qty)
+                }).ToList();
         }
 
         public class ProductViewModel
@@ -35,6 +35,7 @@ namespace Buma.Application.Products
             public string Name { get; set; }
             public string Description { get; set; }
             public string Value { get; set; }
+            public int StockCount { get; set; }   // 10 or below
         }
     }
 }

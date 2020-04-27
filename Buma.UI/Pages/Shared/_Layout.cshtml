@@ -17,36 +17,35 @@
 </head>
 <body>
     <nav class="navbar" role="navigation" aria-label="main navigation">
-        <div class="navbar-brand">
-            <a class="navbar-item" href="https://bulma.io">
-                <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
-            </a>
+        <div class="container">
+            <div class="navbar-brand">
+                <a class="navbar-item" asp-page="/Index">
+                    <img src="https://bulma.io/images/bulma-logo.png" width="112" height="28">
+                </a>
 
-            <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-                <span aria-hidden="true"></span>
-            </a>
-        </div>
-
-        <div id="navbarBasicExample" class="navbar-menu">
-            <div class="navbar-start">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a navbar-item asp-controller="Account" asp-action="/Admin/Index">Admin</a>
-
-                }
+                <a role="button" class="navbar-burger burger" aria-label="menu" aria-expanded="false" data-target="navbarBasicExample">
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                    <span aria-hidden="true"></span>
+                </a>
             </div>
 
-            <div class="navbar-end">
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <a navbar-item asp-controller="Account" asp-action="Logout">Sign Out</a>
-                }
-                else
-                {
-                    <a navbar-item asp-page="/Account/Login">Sign in</a>
-                }
+            <div id="navbarBasicExample" class="navbar-menu">
+                <div class="navbar-start">
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a navbar-item asp-controller="Account" asp-page="/Admin/Index">Admin</a>
+
+                    }
+                </div>
+
+                <div class="navbar-end">
+                    <vc:cart view="Small"></vc:cart>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a navbar-item asp-controller="Account" asp-action="Logout">Sign Out</a>
+                    }
+                </div>
             </div>
         </div>
     </nav>   
@@ -55,9 +54,11 @@
 
     <div class="container body-content">
         @RenderBody()
-        <hr />
-        <footer>
-            <p>&copy; 2020 - Buma.UI</p>
+
+        <footer class="footer">
+            <div class="has-text-centered">
+                <p>&copy; 2020 - Buma <a asp-page="/Admin/Index">Admin</a></p>
+            </div>
         </footer>
     </div>
 

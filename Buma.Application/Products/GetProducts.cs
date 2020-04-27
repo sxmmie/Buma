@@ -20,7 +20,7 @@ namespace Buma.Application.Products
         {
             return _ctx.Products.ToList().Select(x =>
             {
-                var v = $"$ {x.Value.ToString("2")}";
+                var v = $"${x.Value.ToString("2")}";
                 return new ProductViewModel
                 {
                     Name = x.Name,

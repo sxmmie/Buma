@@ -16,9 +16,13 @@ namespace Buma.Application.OrdersAdmin
             _ctx = ctx;
         }
 
-        /*public async Task<IActionResult> Do(int id)
+        public async Task<bool> Do(int id)
         {
-            return id;
-        }*/
+            var order = _ctx.Orders.FirstOrDefault(x => x.Id == id);
+
+            order.Status = order.Status + 1;
+
+            return await _ctx.SaveChangesAsync() > 0;
+        }
     }
 }

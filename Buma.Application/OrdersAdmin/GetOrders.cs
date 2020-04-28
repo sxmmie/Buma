@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Buma.Domain.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,9 +17,21 @@ namespace Buma.Application.OrdersAdmin
             _ctx = ctx;
         }
 
-        public async Task Do(int status)
+        public IEnumerable<Response> Do(int status)
         {
+            return _ctx.Orders.Where(x => x.Status == (OrderStatus)status).Select(x => new Response
+            {
+                Id = x.Id,
+                OrderRef = x.OrderRef,
+                Email = x.Email
+            }).ToList();
+        }
 
+        public class Response
+        {
+            public int Id { get; set; }
+            public string OrderRef { get; set; }
+            public string Email { get; set; }
         }
     }
 }

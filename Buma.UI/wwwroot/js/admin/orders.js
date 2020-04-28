@@ -25,19 +25,23 @@
             this.loading = true;
             axios.get('/orders/' + id)
                 .then(result => {
-                    this.selectedOrders = result.data;
+                    this.selectedOrder = result.data;
                     this.loading = false;
                 });
         },
         updateOrder(id) {
             this.loading = true;
-            axios.get('/orders/' + this.selectedOrders.id, null)
+            axios.put('/orders/' + this.selectedOrders.id, null)
                 .then(result => {
+                    this.loading = false;
                     this.exitOrder();
                     this.loading = false;
                 });
         },
         exitOrder() {
+            this.selectedOrder = null;
+        },
+        computed: {
 
         }
     }

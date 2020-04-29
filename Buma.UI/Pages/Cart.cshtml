@@ -8,31 +8,34 @@
         <div class="cloumn is-8 is-offset-2">
             @foreach (var product in Model.Cart)
             {
-                <div class="level">
+                <div class="level" id="produt-@product.StockId">
                     <div class="level-item">
                         <figure class="image">
                             <img src="~/images/m1-black-new.jpg" />
                         </figure>
                     </div>
                     <div class="level-item">
-                        <div class="columns is-mobile">
-                            <div class="column">
-                                <button class="button" type="button">
+                        <p>@product.Name</p>
+                    </div>
+                    <div class="level-item">
+                        <div class="columns has-text-centered is-gapless is-mobile is-multiline">
+                            <div class="column is-4">
+                                <button class="button" type="button"  onclick="removeOneFromCart(event)" data-stock-id="@product.StockId">
                                     -
                                 </button>
                             </div>
-                            <div class="column align-self-center">
-                                @product.Name
+                            <div class="column is-4 align-self-center" id="stock-@product.StockId">  @* Identity items by their id *@
+                                @product.Qty
                             </div>
-                            <div class="column">
-                                <button class="button" type="button">
+                            <div class="column is-4">
+                                <button class="button" type="button" onclick="addOneToCart(event)" data-stock-id="@product.StockId">
                                     +
                                 </button>
                             </div>
+                            <div class="column is-12">
+                                <a class="has-text-warning" onclick="removeAllFromCart(event)" data-stock-id="@product.StockId">Remove</a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="level-item is-hidden-mobile">
-                        <p>@product.Qty</p>
                     </div>
                     <div class="level-item">
                         <p>@product.Value</p>
@@ -49,5 +52,49 @@
 </div>
 
 @section scripts {
-    <script></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        var addOneToCart = function (e) {
+            var stockId = e.target.dataset.stockId;
+            axios.post("/Cart/AddOne/" + stockId)
+                .then(res => {
+                    var id = "stock-" + stockId;
+                    el = document.getElementById(id);
+
+                    var qty = parseInt(el.innerText);
+                    el.innerText = (qty + 1);
+                })
+                .catch(err => {
+                    alert(err.error)
+                });
+        }
+
+        var removeOneFromCart = function (e) {
+            var stockId = e.target.dataset.stockId;
+            axios.post("/Cart/RemoveOne/" + stockId)
+                .then(res => {
+                    var id = "stock-" + stockId;
+                    el = document.getElementById(id);
+
+                    var qty = parseInt(el.innerText);
+                    el.innerText = (qty - 1);
+                })
+                .catch(err => {
+                    alert(err.error)
+                });
+        }
+
+        var removeAllFromCart = function (e) {
+            var stockId = e.target.dataset.stockId;
+            axios.post("/Cart/RemoveAll/" + stockId)
+                .then(res => {
+                    var id = "product-" + stockId;
+                    el = document.getElementById(id);
+                    el.outerHTML = "";
+                })
+                .catch(err => {
+                    alert(err.error)
+                });
+        }
+    </script>
 }

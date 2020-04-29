@@ -14,8 +14,8 @@
 *.userprefs
 
 # appsettings
-*appsettings.json
-*appsettings.Development.json
+#*appsettings.json
+#*appsettings.Development.json
 
 # Build results
 [Dd]ebug/

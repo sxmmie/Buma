@@ -26,18 +26,28 @@ namespace Buma.Application.Cart
             var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _session.Id).ToList();
             var stockToHold = _ctx.Stocks.Where(x => x.Id == request.StockId).FirstOrDefault();
 
-            if(stockToHold.Qty < request.Qty)
+            // if stock available to us is less than the requested Qty, pop out
+            if (stockToHold.Qty < request.Qty)
             {
                 return false;
             }
 
-            _ctx.StocksOnHold.Add(new StockOnHold
+            // if stockOnHold doesn't contain the idea we have, add it, otherwise increment the Qty
+            if (stockOnHold.Any(x => x.StockId == request.StockId))
             {
-                StockId = stockToHold.Id,
-                SessionId = _session.Id,
-                Qty = request.Qty,
-                ExpiryDate = DateTimeOffset.Now.AddMinutes(20)
-            });
+                // Add
+                stockOnHold.Find(x => x.StockId == request.StockId).Qty += request.Qty;
+            }
+            else
+            {
+                _ctx.StocksOnHold.Add(new StockOnHold
+                {
+                    StockId = stockToHold.Id,
+                    SessionId = _session.Id,
+                    Qty = request.Qty,
+                    ExpiryDate = DateTimeOffset.Now.AddMinutes(20)
+                });
+            }
 
             stockToHold.Qty = stockToHold.Qty - request.Qty;
 

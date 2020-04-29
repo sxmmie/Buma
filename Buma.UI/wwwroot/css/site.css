@@ -64,3 +64,7 @@ for details on configuring this project to bundle and minify static web assets. 
 .StripeElement--webkit-autofill {
     background-color: #fefde5 !important;
 }
+
+.align-self-center {
+    align-items: center;
+}

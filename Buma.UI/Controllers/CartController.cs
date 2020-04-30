@@ -12,23 +12,21 @@ namespace Buma.UI.Controllers
     [Route("[controller]/[action]")]
     public class CartController : Controller
     {
-        private readonly ApplicationDbContext _ctx;
+        /*private readonly ApplicationDbContext _ctx;
 
         public CartController(ApplicationDbContext ctx)
         {
             _ctx = ctx;
-        }
+        }*/
 
         [HttpPost("{stockId}")]
-        public async Task<IActionResult> AddOne(int stockId)
+        public async Task<IActionResult> AddOne(int stockId, [FromServices] AddToCart addToCart)
         {
             var request = new AddToCart.Request
             {
                 StockId = stockId,
                 Qty = 1
             };
-
-            var addToCart = new AddToCart(HttpContext.Session, _ctx);
 
             var success = await addToCart.Do(request);
 
@@ -42,7 +40,7 @@ namespace Buma.UI.Controllers
 
 
         [HttpPost("{stockId}")]
-        public async Task<IActionResult> RemoveOne(int stockId)
+        public async Task<IActionResult> RemoveOne(int stockId, [FromServices] RemoveFromCart removeFromCart)
         {
             var request = new RemoveFromCart.Request
             {
@@ -50,9 +48,7 @@ namespace Buma.UI.Controllers
                 Qty = 1
             };
 
-            var addToCart = new RemoveFromCart(HttpContext.Session, _ctx);
-
-            var success = await addToCart.Do(request);
+            var success = await removeFromCart.Do(request);
 
             if (success)
             {
@@ -63,7 +59,7 @@ namespace Buma.UI.Controllers
         }
 
         [HttpPost("{stockId}")]
-        public async Task<IActionResult> RemoveAll(int stockId)
+        public async Task<IActionResult> RemoveAll(int stockId, [FromServices] RemoveFromCart removeFromCart)
         {
             var request = new RemoveFromCart.Request
             {
@@ -71,9 +67,7 @@ namespace Buma.UI.Controllers
                 All = true
             };
 
-            var addToCart = new RemoveFromCart(HttpContext.Session, _ctx);
-
-            var success = await addToCart.Do(request);
+            var success = await removeFromCart.Do(request);
 
             if (success)
             {

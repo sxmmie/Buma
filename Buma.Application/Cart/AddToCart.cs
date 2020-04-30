@@ -1,29 +1,29 @@
 ﻿using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using System;
-using Newtonsoft.Json;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Buma.Data;
+using Buma.Application.Infrastructure;
 
 namespace Buma.Application.Cart
 {
     public class AddToCart
     {
-        private readonly ISession _session;
+        private readonly ISessionManager _sessionManager;
         private readonly ApplicationDbContext _ctx;
 
-        public AddToCart(ISession session, ApplicationDbContext ctx)
+        public AddToCart(ISessionManager sessionManager, ApplicationDbContext ctx)
         {
-            _session = session;
+            _sessionManager = sessionManager;
             _ctx = ctx;
         }
 
         public async Task<bool> Do(Request request)
         {
-            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _session.Id).ToList();
+            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == _sessionManager.GetId()).ToList();
             var stockToHold = _ctx.Stocks.Where(x => x.Id == request.StockId).FirstOrDefault();
 
             // if stock available to us is less than the requested Qty, pop out
@@ -43,7 +43,7 @@ namespace Buma.Application.Cart
                 _ctx.StocksOnHold.Add(new StockOnHold
                 {
                     StockId = stockToHold.Id,
-                    SessionId = _session.Id,
+                    SessionId = _sessionManager.GetId(),
                     Qty = request.Qty,
                     ExpiryDate = DateTimeOffset.Now.AddMinutes(20)
                 });
@@ -59,33 +59,7 @@ namespace Buma.Application.Cart
 
             await _ctx.SaveChangesAsync();
 
-            var cartList = new List<CartProduct>();            
-            var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
-
-            if (!string.IsNullOrEmpty(stringObject))     // if cart isn't null
-            {
-                cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);  // set cart to what it is currently is
-            }
-
-            // if cart list has stock, 
-            if (cartList.Any(x => x.StockId == request.StockId))
-            {
-                cartList.Find(x => x.StockId == request.StockId).Qty += request.Qty;    // FInd stock item and append Qty
-            }
-            else
-            {
-                // Otherwise add CartProduct to cartList
-                cartList.Add(new CartProduct
-                {
-                    StockId = request.StockId,
-                    Qty = request.Qty
-                });
-            }
-
-            // convert the object to string
-            stringObject = JsonConvert.SerializeObject(cartList);
-
-            _session.SetString("cart", stringObject);
+            _sessionManager.AddProduct(request.StockId, request.Qty);
 
             return true;
         }

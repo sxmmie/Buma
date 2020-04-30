@@ -1,8 +1,8 @@
-﻿using Buma.Data;
+﻿using Buma.Application.Infrastructure;
+using Buma.Data;
 using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,25 +13,21 @@ namespace Buma.Application.Cart
 {
     public class GetCart
     {
-        private readonly ISession _session;
+        private readonly ISessionManager _sessionManager;
         private readonly ApplicationDbContext _ctx;
 
-        public GetCart(ISession session, ApplicationDbContext ctx)
+        public GetCart(ISessionManager sessionManager, ApplicationDbContext ctx)
         {
-            _session = session;
+            _sessionManager = sessionManager;
             _ctx = ctx;
         }
 
         public IEnumerable<Response> Do()
         {
-            // TODO: Account for multiple items in the cart
+            var cartList = _sessionManager.GetCart();
 
-            var stringObject = _session.GetString("cart");
-
-            if (string.IsNullOrEmpty(stringObject))
+            if (cartList == null)
                 return new List<Response>();
-
-            var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);
 
             var response = _ctx.Stocks
                 .Include(x => x.Product)
@@ -45,9 +41,6 @@ namespace Buma.Application.Cart
                     Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
                 })
                 .ToList();
-
-            // get customer info
-            var customerInfoString = _session.GetString("customer-info");
 
             return response;
         }

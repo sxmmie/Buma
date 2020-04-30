@@ -12,20 +12,18 @@ namespace Buma.UI.Pages.Checkout
 {
     public class CustomerInfoModel : PageModel
     {
-        private readonly ApplicationDbContext _ctx;
         private readonly IHostingEnvironment _env;
 
-        public CustomerInfoModel(ApplicationDbContext ctx, IHostingEnvironment env)
+        public CustomerInfoModel(IHostingEnvironment env)
         {
-            _ctx = ctx;
             _env = env;
         }
 
         public AddCustomerInfo.Request CustomerInformation { get; set; }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet([FromServices] GetCustomerInfo getCustomerInfo)
         {
-            var information = new GetCustomerInfo(HttpContext.Session).Do();
+            var information = getCustomerInfo.Do();
 
             if (information == null)
             {
@@ -53,13 +51,13 @@ namespace Buma.UI.Pages.Checkout
             // If cart exists. go to payments
         }
 
-        public IActionResult OnPost()
+        public IActionResult OnPost([FromServices] AddCustomerInfo addCustomerInfo)
         {
             if (!ModelState.IsValid)
                 return Page();
 
             // if valid, store in session
-            new AddCustomerInfo(HttpContext.Session).Do(CustomerInformation);
+            addCustomerInfo.Do(CustomerInformation);
 
             return RedirectToPage("/Checkout/Payment");
         }

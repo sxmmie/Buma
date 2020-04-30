@@ -1,6 +1,6 @@
-﻿using Buma.Domain.Models;
+﻿using Buma.Application.Infrastructure;
+using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,22 +11,19 @@ namespace Buma.Application.Cart
 {
     public class GetCustomerInfo
     {
-        private readonly ISession _session;
+        private readonly ISessionManager _sessionManager;
 
-        public GetCustomerInfo(ISession session)
+        public GetCustomerInfo(ISessionManager sessionManager)
         {
-            _session = session;
+            _sessionManager = sessionManager;
         }
 
         public Request Do()
         {
-            var stringObject = _session.GetString("customer-info");
+            var cusotmerInformation = _sessionManager.GetCustomerInformation();
 
-            if (string.IsNullOrEmpty(stringObject))
+            if (cusotmerInformation == null)
                 return null;
-
-            // Deserialize the "customer-info" stringObject into CustomerInformation
-            var cusotmerInformation = JsonConvert.DeserializeObject<CustomerInformation>(stringObject);
 
             return new Request
             {

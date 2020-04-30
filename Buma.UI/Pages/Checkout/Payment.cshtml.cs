@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Stripe;
+using GetOrderCart = Buma.Application.Cart.GetOrder;
 
 namespace Buma.UI.Pages.Checkout
 {
@@ -23,9 +24,9 @@ namespace Buma.UI.Pages.Checkout
             _ctx = ctx;
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet([FromServices] GetCustomerInfo getCustomerInfo)
         {
-            var information = new GetCustomerInfo(HttpContext.Session).Do();
+            var information = getCustomerInfo.Do();
 
             if (information == null)
                 return RedirectToPage("/Checkout/CustomerInformation");
@@ -35,12 +36,12 @@ namespace Buma.UI.Pages.Checkout
             }
         }
 
-        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken)
+        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken, [FromServices] GetOrderCart getOrder)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
 
-            var CartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
+            var cartOrder = getOrder.Do();
 
             var customer = customers.Create(new CustomerCreateOptions
             {
@@ -50,7 +51,7 @@ namespace Buma.UI.Pages.Checkout
 
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = CartOrder.GetGetTotalCharge(),
+                Amount = cartOrder.GetGetTotalCharge(),
                 Description = "Buma Purchase",
                 Currency = "usd",
                 Customer = customer.Id
@@ -64,16 +65,16 @@ namespace Buma.UI.Pages.Checkout
                 StripeReference = charge.Id,
                 SessionId = sessionId,
 
-                FirstName = CartOrder.CustomerInformation.FirstName,
-                LastName = CartOrder.CustomerInformation.LastName,
-                Email = CartOrder.CustomerInformation.Email,
-                PhoneNumber = CartOrder.CustomerInformation.PhoneNumber,
-                Address1 = CartOrder.CustomerInformation.Address1,
-                Address2 = CartOrder.CustomerInformation.Address2,
-                City = CartOrder.CustomerInformation.City,
-                PostCode = CartOrder.CustomerInformation.PostCode,
+                FirstName = cartOrder.CustomerInformation.FirstName,
+                LastName = cartOrder.CustomerInformation.LastName,
+                Email = cartOrder.CustomerInformation.Email,
+                PhoneNumber = cartOrder.CustomerInformation.PhoneNumber,
+                Address1 = cartOrder.CustomerInformation.Address1,
+                Address2 = cartOrder.CustomerInformation.Address2,
+                City = cartOrder.CustomerInformation.City,
+                PostCode = cartOrder.CustomerInformation.PostCode,
 
-                Stocks = CartOrder.Products.Select(x => new CreateOrder.Stock
+                Stocks = cartOrder.Products.Select(x => new CreateOrder.Stock
                 {
                     StockId = x.StockId,
                     Qty = x.Qty

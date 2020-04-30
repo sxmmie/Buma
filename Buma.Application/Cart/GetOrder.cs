@@ -1,8 +1,8 @@
-﻿using Buma.Data;
+﻿using Buma.Application.Infrastructure;
+using Buma.Data;
 using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,38 +13,33 @@ namespace Buma.Application.Cart
 {
     public class GetOrder
     {
-        private readonly ISession _session;
+        private readonly ISessionManager _sessionManager;
         private readonly ApplicationDbContext _ctx;
 
-        public GetOrder(ISession session, ApplicationDbContext ctx)
+        public GetOrder(ISessionManager sessionManager, ApplicationDbContext ctx)
         {
-            _session = session;
+            _sessionManager = sessionManager;
             _ctx = ctx;
         }
 
         public Response Do()
         {
             // TODO: Account for multiple items in the cart
-
-            var cart = _session.GetString("cart");
-
-            var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(cart);
+            var cart = _sessionManager.GetCart();
 
             // create collection of products for order information
             var listOfProducts = _ctx.Stocks
                 .Include(x => x.Product)
-                .Where(x => cartList.Any(y => y.StockId == x.Id))
+                .Where(x => cart.Any(y => y.StockId == x.Id))
                 .Select(x => new Product
                 {
                     ProductId = x.ProductId,
                     StockId = x.Id,
                     Value = (int) (x.Product.Value * 100),
-                    Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
+                    Qty = cart.FirstOrDefault(y => y.StockId == x.Id).Qty
                 }).ToList();
 
-            var customerInfoString = _session.GetString("customer-info");
-
-            var cusotmerInformation = JsonConvert.DeserializeObject<CustomerInformation>(customerInfoString);
+            var cusotmerInformation = _sessionManager.GetCustomerInformation();
 
             return new Response
             {

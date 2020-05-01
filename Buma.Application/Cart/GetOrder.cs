@@ -1,43 +1,31 @@
-﻿using Buma.Application.Infrastructure;
-using Buma.Data;
-using Buma.Domain.Models;
-using Microsoft.AspNetCore.Http;
+﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Buma.Application.Cart
 {
     public class GetOrder
     {
         private readonly ISessionManager _sessionManager;
-        private readonly ApplicationDbContext _ctx;
 
-        public GetOrder(ISessionManager sessionManager, ApplicationDbContext ctx)
+        public GetOrder(ISessionManager sessionManager)
         {
             _sessionManager = sessionManager;
-            _ctx = ctx;
         }
 
         public Response Do()
         {
             // TODO: Account for multiple items in the cart
-            var cart = _sessionManager.GetCart();
-
-            // create collection of products for order information
-            var listOfProducts = _ctx.Stocks
-                .Include(x => x.Product)
-                .Where(x => cart.Any(y => y.StockId == x.Id))
-                .Select(x => new Product
-                {
-                    ProductId = x.ProductId,
-                    StockId = x.Id,
-                    Value = (int) (x.Product.Value * 100),
-                    Qty = cart.FirstOrDefault(y => y.StockId == x.Id).Qty
-                }).ToList();
+            var listOfProducts = _sessionManager.GetCart(x => new Product
+            {
+                ProductId = x.ProductId,
+                StockId = x.StockId,
+                Value = (int)(x.Value * 100),
+                Qty = x.Qty
+            });
 
             var cusotmerInformation = _sessionManager.GetCustomerInformation();
 

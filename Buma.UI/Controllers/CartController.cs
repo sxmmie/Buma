@@ -39,13 +39,13 @@ namespace Buma.UI.Controllers
         }
 
 
-        [HttpPost("{stockId}")]
-        public async Task<IActionResult> RemoveOne(int stockId, [FromServices] RemoveFromCart removeFromCart)
+        [HttpPost("{stockId}/{qty}")]
+        public async Task<IActionResult> Remove(int stockId, int qty, [FromServices] RemoveFromCart removeFromCart)
         {
             var request = new RemoveFromCart.Request
             {
                 StockId = stockId,
-                Qty = 1
+                Qty = qty
             };
 
             var success = await removeFromCart.Do(request);
@@ -58,23 +58,20 @@ namespace Buma.UI.Controllers
             return BadRequest("Failed to remove item from cart");
         }
 
-        [HttpPost("{stockId}")]
-        public async Task<IActionResult> RemoveAll(int stockId, [FromServices] RemoveFromCart removeFromCart)
+        [HttpGet]
+        public IActionResult GetCartComponent([FromServices] GetCart getCart)
         {
-            var request = new RemoveFromCart.Request
-            {
-                StockId = stockId,
-                All = true
-            };
+            var totalValue = getCart.Do().Sum(x => x.RealValue * x.Qty);
 
-            var success = await removeFromCart.Do(request);
+            return PartialView("Components/Cart/Small", $"${totalValue}");
+        }
 
-            if (success)
-            {
-                return Ok("item removed all items from cart");
-            }
+        [HttpGet]
+        public IActionResult GetCartMain([FromServices] GetCart getCart)
+        {
+            var cart = getCart.Do();
 
-            return BadRequest("Failed to remove all items from cart");
+            return PartialView("_CartPartial", cart);
         }
     }
 }

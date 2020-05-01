@@ -1,5 +1,5 @@
-﻿using Buma.Application.Infrastructure;
-using Buma.Data;
+﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
@@ -14,35 +14,22 @@ namespace Buma.Application.Cart
     public class GetCart
     {
         private readonly ISessionManager _sessionManager;
-        private readonly ApplicationDbContext _ctx;
 
-        public GetCart(ISessionManager sessionManager, ApplicationDbContext ctx)
+        public GetCart(ISessionManager sessionManager)
         {
             _sessionManager = sessionManager;
-            _ctx = ctx;
         }
 
         public IEnumerable<Response> Do()
         {
-            var cartList = _sessionManager.GetCart();
-
-            if (cartList == null)
-                return new List<Response>();
-
-            var response = _ctx.Stocks
-                .Include(x => x.Product)
-                .Where(x => cartList.Any(y => y.StockId == x.Id))
-                .Select(x => new Response
-                {
-                    Name = x.Product.Name,
-                    Value = $"$ {x.Product.Value.ToString("N2")}",
-                    RealValue = x.Product.Value,
-                    StockId = x.Id,
-                    Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
-                })
-                .ToList();
-
-            return response;
+            return _sessionManager.GetCart(x => new Response
+            {
+                Name = x.ProductName,
+                Value = x.Value.GetValueString(),
+                RealValue = x.Value,
+                StockId = x.StockId,
+                Qty = x.Qty
+            });
         }
 
         public class Response

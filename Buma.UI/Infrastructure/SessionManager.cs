@@ -1,4 +1,4 @@
-﻿using Buma.Application.Infrastructure;
+﻿using Buma.Domain.Infrastructure;
 using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -17,7 +17,7 @@ namespace Buma.UI.Infrastructure
             _session = http.HttpContext.Session;
         }
 
-        public void AddProduct(int stockId, int qty)
+        public void AddProduct(CartProduct cartProduct)
         {
             var cartList = new List<CartProduct>();
             var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
@@ -28,18 +28,14 @@ namespace Buma.UI.Infrastructure
             }
 
             // if cart list has stock, 
-            if (cartList.Any(x => x.StockId == stockId))
+            if (cartList.Any(x => x.StockId == cartProduct.StockId))
             {
-                cartList.Find(x => x.StockId == stockId).Qty += qty;    // FInd stock item and append Qty
+                cartList.Find(x => x.StockId == cartProduct.StockId).Qty += cartProduct.Qty;    // FInd stock item and append Qty
             }
             else
             {
                 // Otherwise add CartProduct to cartList
-                cartList.Add(new CartProduct
-                {
-                    StockId = stockId,
-                    Qty = qty
-                });
+                cartList.Add(cartProduct);
             }
 
             // convert the object to string
@@ -48,16 +44,16 @@ namespace Buma.UI.Infrastructure
             _session.SetString("cart", stringObject);
         }
 
-        public List<CartProduct> GetCart()
+        public IEnumerable<TResult> GetCart<TResult>(Func<CartProduct, TResult> selector)
         {
             var stringObject = _session.GetString("cart");
 
             if (string.IsNullOrEmpty(stringObject))
-                return null;
+                return new List<TResult>();
 
-            var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);
+            var cartList = JsonConvert.DeserializeObject<IEnumerable<CartProduct>>(stringObject);
 
-            return cartList;
+            return cartList.Select(selector);
         }
 
         public void AddCustomerInformation(CustomerInformation customer)

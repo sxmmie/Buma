@@ -1,5 +1,5 @@
-﻿using Buma.Application.Infrastructure;
-using Buma.Data;
+﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using System;

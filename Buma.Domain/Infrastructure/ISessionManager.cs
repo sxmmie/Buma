@@ -1,17 +1,18 @@
 ﻿using Buma.Domain.Models;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Buma.Application.Infrastructure
+namespace Buma.Domain.Infrastructure
 {
     public interface ISessionManager
     {
         // get the sessionId, get the cart products from the sessionId, save cart products from the session
         string GetId();
-        void AddProduct(int stockId, int Qty);
+        void AddProduct(CartProduct cartProduct);
         void RemoveProduct(int stockId, int Qty);
-        List<CartProduct> GetCart();
+        IEnumerable<TResult> GetCart<TResult>(Func<CartProduct, TResult> selector);
 
         void AddCustomerInformation(CustomerInformation customer);
         CustomerInformation GetCustomerInformation();

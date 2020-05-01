@@ -1,4 +1,4 @@
-﻿using Buma.Application.Infrastructure;
+﻿using Buma.Domain.Infrastructure;
 using Buma.Domain.Models;
 using Microsoft.AspNetCore.Http;
 using System;

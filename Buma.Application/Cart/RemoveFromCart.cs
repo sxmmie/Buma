@@ -1,51 +1,29 @@
-﻿using Buma.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Buma.Data;
-using Buma.Application.Infrastructure;
+using Buma.Domain.Infrastructure;
 
 namespace Buma.Application.Cart
 {
     public class RemoveFromCart
     {
         private readonly ISessionManager _sessionManager;
-        private readonly ApplicationDbContext _ctx;
+        private readonly IStockManager _stockManager;
 
-        public RemoveFromCart(ISessionManager sessionManager, ApplicationDbContext ctx)
+        public RemoveFromCart(ISessionManager sessionManager, IStockManager stockManager)
         {
             _sessionManager = sessionManager;
-            _ctx = ctx;
+            _stockManager = stockManager;
         }
 
         public async Task<bool> Do(Request request)
         {
-            var stockOnHold = _ctx.StocksOnHold.FirstOrDefault(x => x.StockId == request.StockId && x.SessionId == _sessionManager.GetId());
+            if (request.Qty <= 0)
+                return false;
 
-            var stock = _ctx.Stocks.FirstOrDefault(x => x.Id == request.StockId);
-
-            if (request.All)
-            {
-                stock.Qty += stockOnHold.Qty;
-                _sessionManager.RemoveProduct(request.StockId, stockOnHold.Qty);
-                stockOnHold.Qty = 0;
-            }
-            else
-            {
-                stock.Qty += request.Qty;
-                stockOnHold.Qty -= request.Qty;     // reduce stock by the request.Qty
-                _sessionManager.RemoveProduct(request.StockId, request.Qty);
-            }
-
-            if (stockOnHold.Qty <= 0)
-            {
-                _ctx.Remove(stockOnHold);
-            }
-
-            await _ctx.SaveChangesAsync();
+            await _stockManager.RemoveStockFromHold(request.StockId, request.Qty, _sessionManager.GetId());
+            
+            _sessionManager.RemoveProduct(request.StockId, request.Qty);            
 
             return true;
         }
@@ -54,7 +32,6 @@ namespace Buma.Application.Cart
         {
             public int StockId { get; set; }
             public int Qty { get; set; }
-            public bool All { get; set; }
         }
     }
 }

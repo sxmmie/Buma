@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Buma.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,20 +11,17 @@ namespace Buma.Application.Orders
 {
     public class CreateOrder
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IOrderManager _orderManager;
+        private readonly IStockManager _stockManager;
 
-        public CreateOrder(ApplicationDbContext ctx)
+        public CreateOrder(IOrderManager orderManager, IStockManager stockManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
+            _stockManager = stockManager;
         }
 
         public async Task<bool> Do(Request request)
         {
-            // Get list of stock from DB
-            var stockOnHold = _ctx.StocksOnHold.Where(x => x.SessionId == request.SessionId).ToList();
-
-            _ctx.StocksOnHold.RemoveRange(stockOnHold);
-
             /*foreach (var stock in stockOnHold)
             {
                 stock.Id = request.Stocks.FirstOrDefault(x => x.StockId == stock.Id).Qty;
@@ -50,9 +48,15 @@ namespace Buma.Application.Orders
                 }).ToList()
             };
 
-            _ctx.Orders.Add(order);
+            var success = await _orderManager.CreateOrder(order) > 0;
+            if (success)
+            {
+                await _stockManager.RemoveStockFromHold(request.SessionId);
 
-           return await _ctx.SaveChangesAsync() > 0;
+                return true;
+            }
+
+            return false;
         }
 
         public string CreateOrderReference()
@@ -65,7 +69,7 @@ namespace Buma.Application.Orders
             {
                 for (int i = 0; i < result.Length; i++)
                     result[i] = chars[random.Next(chars.Length)];
-            } while (_ctx.Orders.Any(x => x.OrderRef == new string(result)));
+            } while (_orderManager.OrderRefernceExists(new string(result)));
 
             return new string(result);
         }

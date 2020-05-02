@@ -68,6 +68,18 @@ namespace Buma.Domain.Infrastructure
             return _ctx.SaveChangesAsync();
         }
 
+        public Task RemoveStockFromHold(string sessionId)
+        {
+            // Get list of stock from DB
+            var stockOnHold = _ctx.StocksOnHold
+                .Where(x => x.SessionId == sessionId)
+                .ToList();
+
+            _ctx.StocksOnHold.RemoveRange(stockOnHold);
+
+            return _ctx.SaveChangesAsync();
+        }
+
         public Task RemoveStockFromHold(int stockId, int qty, string sessionId)
         {
             var stockOnHold = _ctx.StocksOnHold.FirstOrDefault(x => x.StockId == stockId && x.SessionId == sessionId);

@@ -1,4 +1,6 @@
 ﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
+using Buma.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,45 +12,16 @@ namespace Buma.Application.Orders
 {
     public class GetOrder
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IOrderManager _orderManager;
 
-        public GetOrder(ApplicationDbContext ctx)
+        public GetOrder(IOrderManager orderManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
         }
 
         public Response Do(string reference)
         {
-            // Grab an order, include all order products, include stock and product information
-            return _ctx.Orders.Where(x => x.OrderRef == reference)
-                .Include(x => x.OrderStocks)
-                .ThenInclude(x => x.Stock)
-                .ThenInclude(x => x.Product)
-                .Select(x => new Response
-                {
-                    //OrderRef = CreateOrderReference(),
-
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Email = x.Email,
-                    PhoneNumber = x.PhoneNumber,
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
-                    City = x.City,
-                    PostCode = x.PostCode,
-
-                    Products = x.OrderStocks.Select(y => new Product
-                    {
-                        Name = y.Stock.Product.Name,
-                        Description = y.Stock.Product.Description,
-                        Value = $"{y.Stock.Product.Value.ToString("2")}",
-                        Qty = y.Qty,
-                        StockDescription = y.Stock.Description
-                    }),
-
-                    TotalValue = x.OrderStocks.Sum(y => y.Stock.Product.Value).ToString("2")
-
-                }).FirstOrDefault();
+            return _orderManager.GetOrderByReference(reference, Projection);
         }
 
         public class Response
@@ -78,5 +51,34 @@ namespace Buma.Application.Orders
             public int Qty { get; set; }
             public string StockDescription { get; set; }    // describe size or type of stcok
         }
+
+        private static Func<Order, Response> Projection = (order) =>
+            new Response
+            {
+                //OrderRef = CreateOrderReference(),
+
+                FirstName = order.FirstName,
+                LastName = order.LastName,
+                Email = order.Email,
+                PhoneNumber = order.PhoneNumber,
+                Address1 = order.Address1,
+                Address2 = order.Address2,
+                City = order.City,
+                PostCode = order.PostCode,
+
+                Products = order.OrderStocks.Select(y => new Product
+                {
+                    Name = y.Stock.Product.Name,
+                    Description = y.Stock.Product.Description,
+                    Value = $"{y.Stock.Product.Value.ToString("2")}",
+                    Qty = y.Qty,
+                    StockDescription = y.Stock.Description
+                }),
+
+                TotalValue = order.OrderStocks.Sum(y => y.Stock.Product.Value).ToString("2")
+            };
+
+
+        
     }
 }

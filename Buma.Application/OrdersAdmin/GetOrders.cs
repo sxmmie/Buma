@@ -1,5 +1,6 @@
 ﻿using Buma.Data;
 using Buma.Domain.Enums;
+using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,21 +11,21 @@ namespace Buma.Application.OrdersAdmin
 {
     public class GetOrders
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IOrderManager _orderManager;
 
-        public GetOrders(ApplicationDbContext ctx)
+        public GetOrders(IOrderManager orderManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
         }
 
         public IEnumerable<Response> Do(int status)
         {
-            return _ctx.Orders.Where(x => x.Status == (OrderStatus)status).Select(x => new Response
+            return _orderManager.GetOrdersByStatus((OrderStatus)status, x => new Response
             {
                 Id = x.Id,
                 OrderRef = x.OrderRef,
                 Email = x.Email
-            }).ToList();
+            });
         }
 
         public class Response

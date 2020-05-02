@@ -14,35 +14,28 @@ namespace Buma.UI.Controllers
     [Authorize(Policy = "Manager")]
     public class ProductsController : Controller
     {
-        private readonly ApplicationDbContext _ctx;
-
-        public ProductsController(ApplicationDbContext ctx)
-        {
-            _ctx = ctx;
-        }
-
         [HttpGet("")]
-        public IActionResult GetProducts() => Ok(new GetProducts(_ctx).Do());
+        public IActionResult GetProducts([FromServices] GetProducts getProducts) => Ok(getProducts.Do());
 
         [HttpGet("{id}")]
-        public IActionResult GetProduct(int id) => Ok(new GetProduct(_ctx).Do(id));
+        public IActionResult GetProduct([FromServices] GetProduct getProduct, int id) => Ok(getProduct.Do(id));
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateProduct([FromBody] CreateProduct.Request request)
+        public async Task<IActionResult> CreateProduct([FromServices] CreateProduct createProduct, [FromBody] CreateProduct.Request request)
         {
-            return Ok((await new CreateProduct(_ctx).Do(request)));
+            return Ok((await createProduct.Do(request)));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(int id)
+        public async Task<IActionResult> DeleteProduct([FromServices] DeleteProduct deleteProduct, int id)
         {
-            return Ok((await new DeleteProduct(_ctx).Do(id)));
+            return Ok((await deleteProduct.Do(id)));
         }
 
         [HttpPut("")]
-        public async Task<IActionResult> UpdateProduct([FromBody] UpdateProduct.Request request)
+        public async Task<IActionResult> UpdateProduct([FromServices] UpdateProduct updateProduct, [FromBody] UpdateProduct.Request request)
         {
-            return Ok((await new UpdateProduct(_ctx).Do(request)));
+            return Ok((await updateProduct.Do(request)));
         }
     }
 }

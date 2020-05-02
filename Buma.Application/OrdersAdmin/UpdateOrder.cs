@@ -1,4 +1,4 @@
-﻿using Buma.Data;
+﻿
 using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace Buma.Application.OrdersAdmin
             _orderManager = orderManager;
         }
 
-        public Task Do(int id)
+        public Task<int> Do(int id)
         {
             return _orderManager.AdvanceOrder(id);
         }

@@ -1,6 +1,5 @@
-﻿using Buma.Data;
-using Buma.Domain.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Buma.Domain.Infrastructure;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;

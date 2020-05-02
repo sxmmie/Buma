@@ -1,6 +1,4 @@
-﻿using Buma.Data;
-using Buma.Domain.Infrastructure;
-using Microsoft.EntityFrameworkCore;
+﻿using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +11,14 @@ namespace Buma.Application.Products
     {
         private readonly IProductManager _productManager;
 
-        public GetProducts(ApplicationDbContext ctx, IProductManager productManager)
+        public GetProducts(IProductManager productManager)
         {
             _productManager = productManager;
         }
 
         public IEnumerable<ProductViewModel> Do()
         {
-            return _productManager.GetProducts(x => new ProductViewModel
+            return _productManager.GetProductsWithStock(x => new ProductViewModel
             {
                 Name = x.Name,
                 Description = x.Description,

@@ -15,13 +15,11 @@ namespace Buma.UI.Pages.Checkout
 {
     public class PaymentModel : PageModel
     {
-        private readonly ApplicationDbContext _ctx;
         public string PublicKey { get; set; }
 
-        public PaymentModel(IConfiguration config, ApplicationDbContext ctx)
+        public PaymentModel(IConfiguration config)
         {
             PublicKey = config["Stripe:PublicKey"].ToString();
-            _ctx = ctx;
         }
 
         public IActionResult OnGet([FromServices] GetCustomerInfo getCustomerInfo)
@@ -36,7 +34,7 @@ namespace Buma.UI.Pages.Checkout
             }
         }
 
-        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken, [FromServices] GetOrderCart getOrder)
+        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken, [FromServices] GetOrderCart getOrder, [FromServices] CreateOrder createOrder)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
@@ -60,7 +58,7 @@ namespace Buma.UI.Pages.Checkout
             var sessionId = HttpContext.Session.Id;
 
             // create order
-            await new CreateOrder(_ctx).Do(new CreateOrder.Request
+            await createOrder.Do(new CreateOrder.Request
             {
                 StripeReference = charge.Id,
                 SessionId = sessionId,

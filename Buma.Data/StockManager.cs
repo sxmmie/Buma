@@ -18,6 +18,28 @@ namespace Buma.Domain.Infrastructure
             _ctx = ctx;
         }
 
+        public Task<int> CreateStock(Stock stock)
+        {
+            _ctx.Stocks.Add(stock);
+
+            return _ctx.SaveChangesAsync();
+        }
+
+        public Task<int> DeleteStock(int id)
+        {
+            var stock = _ctx.Stocks.FirstOrDefault(x => x.Id == id);
+            _ctx.Stocks.Remove(stock);
+
+            return _ctx.SaveChangesAsync();
+        }
+
+        public Task<int> UpdateStockRange(List<Stock> stockList)
+        {
+            _ctx.Stocks.UpdateRange(stockList);
+
+            return _ctx.SaveChangesAsync();
+        }
+
         // check by the Qty and StockId if there are enough stock
         public bool EnoughStock(int stockId, int qty)
         {
@@ -120,6 +142,5 @@ namespace Buma.Domain.Infrastructure
 
             return Task.CompletedTask;
         }
-
     }
 }

@@ -1,5 +1,6 @@
-﻿using Buma.Data;
-using Microsoft.EntityFrameworkCore;
+﻿
+using Buma.Domain.Infrastructure;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,30 +11,26 @@ namespace Buma.Application.StockAdmin
 {
     public class GetStock
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IProductManager _productManager;
 
-        public GetStock(ApplicationDbContext ctx)
+        public GetStock(IProductManager productManager)
         {
-            _ctx = ctx;
+            _productManager = productManager;
         }
 
         public IEnumerable<ProductModelView> Do()
         {
-            var stock = _ctx.Products
-                .Include(x => x.Stock)
-                .Select(x => new ProductModelView
+            return _productManager.GetProductsWithStock(x => new ProductModelView
+            {
+                Id = x.Id,
+                Description = x.Description,
+                Stock = x.Stock.Select(y => new StockModelView
                 {
-                    Id = x.Id,
-                    Description = x.Description,
-                    Stock = x.Stock.Select(y => new StockModelView
-                    {
-                        Id = y.Id,
-                        Description = y.Description,
-                        Qty = y.Qty
-                    })
-                }).ToList();
-
-            return stock;
+                    Id = y.Id,
+                    Description = y.Description,
+                    Qty = y.Qty
+                })
+            });
         }
 
         public class StockModelView

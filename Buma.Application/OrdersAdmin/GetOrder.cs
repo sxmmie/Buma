@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,44 +11,39 @@ namespace Buma.Application.OrdersAdmin
 {
     public class GetOrder
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IOrderManager _orderManager;
 
-        public GetOrder(ApplicationDbContext ctx)
+        public GetOrder(IOrderManager orderManager)
         {
-            _ctx = ctx;
+            _orderManager = orderManager;
         }
 
         public Response Do(int id)
         {
-             return _ctx.Orders
-                .Where(x => x.Id == id)
-                .Include(x => x.OrderStocks)
-                .ThenInclude(x => x.Stock)
-                .ThenInclude(x => x.Product)
-                .Select(x => new Response
+            return _orderManager.GetOrderById(id, x => new Response
+            {
+                Id = x.Id,
+                OrderRef = x.OrderRef,
+                StripeReference = x.StripeReference,
+
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Email = x.Email,
+                PhoneNumber = x.PhoneNumber,
+
+                Address1 = x.Address1,
+                Address2 = x.Address2,
+                PostCode = x.PostCode,
+                City = x.City,
+
+                Products = x.OrderStocks.Select(y => new Product
                 {
-                    Id = x.Id,
-                    OrderRef = x.OrderRef,
-                    StripeReference = x.StripeReference,
-
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    Email = x.Email,
-                    PhoneNumber = x.PhoneNumber,
-
-                    Address1 = x.Address1,
-                    Address2 = x.Address2,
-                    PostCode = x.PostCode,
-                    City = x.City,
-
-                    Products = x.OrderStocks.Select(y => new Product
-                    {
-                        Name = y.Stock.Product.Name,
-                        Description = y.Stock.Product.Description,
-                        Qty = y.Qty,
-                        StockDescription = y.Stock.Description
-                    })
-                }).FirstOrDefault();
+                    Name = y.Stock.Product.Name,
+                    Description = y.Stock.Product.Description,
+                    Qty = y.Qty,
+                    StockDescription = y.Stock.Description
+                }),
+            });
         }
 
         public class Response

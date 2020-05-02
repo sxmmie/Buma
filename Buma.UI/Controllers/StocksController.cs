@@ -22,24 +22,24 @@ namespace Buma.UI.Controllers
         }
 
         [HttpGet("")]
-        public IActionResult GetStock() => Ok(new GetStock(_ctx).Do());
+        public IActionResult GetStock([FromServices] GetStock getStock) => Ok(getStock.Do());
 
         [HttpPost("")]
-        public async Task<IActionResult> CreateStock([FromBody] CreateStock.Request request)
+        public async Task<IActionResult> CreateStock([FromBody] CreateStock.Request request, [FromServices] CreateStock createStock)
         {
-            return Ok((await new CreateStock(_ctx).Do(request)));
+            return Ok((await createStock.Do(request)));
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteStock(int id)
+        public async Task<IActionResult> DeleteStock(int id, [FromServices] DeleteStock deleteStock)
         {
-            return Ok((await new DeleteStock(_ctx).Do(id)));
+            return Ok((await deleteStock.Do(id)));
         }
 
         [HttpPut("")]
-        public async Task<IActionResult> UpdateStock([FromBody] UpdateStock.Request request)
+        public async Task<IActionResult> UpdateStock([FromBody] UpdateStock.Request request, [FromServices] UpdateStock updateStock)
         {
-            return Ok((await new UpdateStock(_ctx).Do(request)));
+            return Ok((await updateStock.Do(request)));
         }
     }
 }

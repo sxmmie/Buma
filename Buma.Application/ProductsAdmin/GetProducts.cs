@@ -1,5 +1,5 @@
 ﻿using Buma.Application.Products;
-using Buma.Data;
+
 using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -20,7 +20,7 @@ namespace Buma.Application.ProductsAdmin
 
         public IEnumerable<ProductViewModel> Do()
         {
-            return _productManager.GetProducts(x => new ProductViewModel
+            return _productManager.GetProductsWithStock(x => new ProductViewModel
             {
                 Name = x.Name,
                 Description = x.Description,

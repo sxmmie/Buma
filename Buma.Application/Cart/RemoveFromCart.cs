@@ -1,6 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Buma.Data;
+
 using Buma.Domain.Infrastructure;
 
 namespace Buma.Application.Cart

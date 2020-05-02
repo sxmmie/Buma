@@ -1,4 +1,5 @@
-﻿using Buma.Data;
+﻿
+using Buma.Domain.Infrastructure;
 using Buma.Domain.Models;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,11 @@ namespace Buma.Application.StockAdmin
 {
     public class CreateStock
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IStockManager _stockManager;
 
-        public CreateStock(ApplicationDbContext ctx)
+        public CreateStock(IStockManager stockManager)
         {
-            _ctx = ctx;         
+            _stockManager = stockManager;
         }
 
         public async Task<Response> Do(Request request)
@@ -26,9 +27,7 @@ namespace Buma.Application.StockAdmin
                 Description = request.Description
             };
 
-            _ctx.Stocks.Add(stock);
-
-            await _ctx.SaveChangesAsync();
+            await _stockManager.CreateStock(stock);
 
             return new Response
             {

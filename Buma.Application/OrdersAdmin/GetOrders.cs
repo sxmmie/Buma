@@ -1,4 +1,4 @@
-﻿using Buma.Data;
+﻿
 using Buma.Domain.Enums;
 using Buma.Domain.Infrastructure;
 using System;

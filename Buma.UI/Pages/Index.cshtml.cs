@@ -12,18 +12,11 @@ namespace Buma.UI.Pages
 {
     public class IndexModel : PageModel
     {
-        private readonly ApplicationDbContext _ctx;
-
-        public IndexModel(ApplicationDbContext ctx)
-        {
-            _ctx = ctx;
-        }
-
         public IEnumerable<GetProducts.ProductViewModel> Products { get; set; }
 
-        public void OnGet()
+        public void OnGet([FromServices] GetProducts getProducts)
         {
-            Products = new GetProducts(_ctx).Do();
+            Products = getProducts.Do();
         }
     }
 }

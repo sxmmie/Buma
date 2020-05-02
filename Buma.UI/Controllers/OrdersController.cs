@@ -36,7 +36,16 @@ namespace Buma.UI.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateOrder(int id, [FromServices] UpdateOrder updateOrder)
         {
-            return Ok(await updateOrder.Do(id));
+            var success = await updateOrder.Do(id) > 0;
+
+            if (success)
+            {
+                return Ok("order successfully updated");
+            }
+            else
+            {
+                return BadRequest("Could not update the order");
+            };
         }
     }
 }

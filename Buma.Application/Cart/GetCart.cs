@@ -1,13 +1,5 @@
-﻿using Buma.Data;
-using Buma.Domain.Infrastructure;
-using Buma.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using Buma.Domain.Infrastructure;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Buma.Application.Cart
 {

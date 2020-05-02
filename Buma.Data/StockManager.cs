@@ -96,5 +96,30 @@ namespace Buma.Domain.Infrastructure
 
             return _ctx.SaveChangesAsync();
         }
+
+        public Task RetrieveExpiredStockOnHold()
+        {
+            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.ExpiryDate <= DateTimeOffset.Now).ToList();
+
+            if (stocksOnHold.Count > 0)
+            {
+                // Remove stock and put it back into our actual stock
+                var stockToReturn = _ctx.Stocks.Where(x => stocksOnHold.Any(y => y.StockId == x.Id)).ToList();
+
+                foreach (var stock in stockToReturn)
+                {
+                    // restore Qty
+                    stock.Qty = stock.Qty + stocksOnHold.FirstOrDefault(x => x.StockId == stock.Id).Qty;
+                }
+
+                // Go to the StocksOnHold and remove stock
+                _ctx.StocksOnHold.RemoveRange(stocksOnHold);
+
+                return _ctx.SaveChangesAsync();
+            }
+
+            return Task.CompletedTask;
+        }
+
     }
 }

@@ -1,5 +1,6 @@
 ﻿using Buma.Application.Products;
 using Buma.Data;
+using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,25 +11,22 @@ namespace Buma.Application.ProductsAdmin
 {
     public class GetProduct
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IProductManager _productManager;
 
-        public GetProduct(ApplicationDbContext context)
+        public GetProduct(IProductManager productManager)
         {
-            _context = context;
+            _productManager = productManager;
         }
 
         public ProductViewModel Do(int id)
         {
-            var product = _context.Products.Where(x => x.Id == id).Select(x => new ProductViewModel
+            return _productManager.GetProductById(id, x => new ProductViewModel
             {
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description,
                 Value = x.Value
-            })
-             .FirstOrDefault();
-
-            return product;
+            });
         }
 
         public class ProductViewModel

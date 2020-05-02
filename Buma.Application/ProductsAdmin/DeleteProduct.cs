@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,21 +10,16 @@ namespace Buma.Application.ProductsAdmin
 {
     public class DeleteProduct
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IProductManager _productManager;
 
-        public DeleteProduct(ApplicationDbContext context)
+        public DeleteProduct(IProductManager productManager)
         {
-            _context = context;
+            _productManager = productManager;
         }
 
-        public async Task<bool> Do(int id)
+        public Task<int> Do(int id)
         {
-            var product = _context.Products.FirstOrDefault(x => x.Id == id);
-            _context.Products.Remove(product);
-
-            await _context.SaveChangesAsync();
-
-            return true;
+            return _productManager.DeleteProduct(id);
         }
     }
 }

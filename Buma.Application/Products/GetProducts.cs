@@ -1,4 +1,5 @@
 ﻿using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -10,24 +11,22 @@ namespace Buma.Application.Products
 {
     public class GetProducts
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IProductManager _productManager;
 
-        public GetProducts(ApplicationDbContext ctx)
+        public GetProducts(ApplicationDbContext ctx, IProductManager productManager)
         {
-            _ctx = ctx;
+            _productManager = productManager;
         }
 
         public IEnumerable<ProductViewModel> Do()
         {
-            return _ctx.Products
-                .Include(x => x.Stock)
-                .Select(x => new ProductViewModel
-                {
-                    Name = x.Name,
-                    Description = x.Description,
-                    Value = $"${x.Value.ToString("2")}",        // 1100.50 => 1,000.50 => 1,000.50
-                    StockCount = x.Stock.Sum(y => y.Qty)
-                }).ToList();
+            return _productManager.GetProducts(x => new ProductViewModel
+            {
+                Name = x.Name,
+                Description = x.Description,
+                Value = x.Value.GetValueString(),        // 1100.50 => 1,000.50 => 1,000.50
+                StockCount = x.Stock.Sum(y => y.Qty)
+            });
         }
 
         public class ProductViewModel

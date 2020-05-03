@@ -4,10 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Buma.Data.Domain
+namespace Buma.Application
 {
-    public interface IUserManager
+    public class Service : Attribute
     {
-        Task CreateManagerUser(string username, string password);
+        
     }
 }

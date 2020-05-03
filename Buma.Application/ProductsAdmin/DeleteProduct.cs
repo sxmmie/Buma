@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.ProductsAdmin
 {
+    [Service]
     public class DeleteProduct
     {
         private readonly IProductManager _productManager;

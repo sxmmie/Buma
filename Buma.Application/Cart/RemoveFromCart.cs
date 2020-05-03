@@ -5,6 +5,7 @@ using Buma.Domain.Infrastructure;
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class RemoveFromCart
     {
         private readonly ISessionManager _sessionManager;

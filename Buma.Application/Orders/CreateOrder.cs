@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.Orders
 {
+    [Service]
     public class CreateOrder
     {
         private readonly IOrderManager _orderManager;

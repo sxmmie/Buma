@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.StockAdmin
 {
+    [Service]
     public class CreateStock
     {
         private readonly IStockManager _stockManager;

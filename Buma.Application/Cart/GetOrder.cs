@@ -6,6 +6,7 @@ using System.Linq;
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class GetOrder
     {
         private readonly ISessionManager _sessionManager;

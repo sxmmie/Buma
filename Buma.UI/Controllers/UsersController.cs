@@ -1,14 +1,8 @@
-﻿using Buma.Application.ProductsAdmin;
-using Buma.Application.StockAdmin;
-using Buma.Application.UsersAdmin;
-using Buma.Data;
+﻿using Buma.UI.ViewModels.Admin;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Security.Claims;
 using System.Threading.Tasks;
 
 namespace Buma.UI.Controllers
@@ -17,16 +11,28 @@ namespace Buma.UI.Controllers
     [Authorize(Policy = "Admin")]
     public class UsersController : Controller
     {
-        private readonly CreateUser _createUser;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public UsersController(CreateUser createUser)
+        public UsersController(UserManager<IdentityUser> userManager)
         {
-            _createUser = createUser;
+            _userManager = userManager;
         }
 
-        public async Task<IActionResult> CreateUser([FromBody] CreateUser.Request request)
+        public async Task<IActionResult> CreateUser([FromBody] CreateUserViewModel vm)
         {
-            await _createUser.Do(request);
+            var managerUser = new IdentityUser()
+            {
+                UserName = vm.Username
+            };
+
+            var result = await _userManager.CreateAsync(managerUser, "password");
+
+            // How do you know whose an adminuser and whose managerUser? -> claims
+            // Claims are what the user has, used to describe the user (users contain claims), roles contain a user.
+            // A claim is a key-value pair, added 2 users and gave then claims that define their roles
+            var managerClaim = new Claim("Role", "Manager");
+
+            var result2 = _userManager.AddClaimAsync(managerUser, managerClaim);
 
             return Ok();
         }

@@ -11,6 +11,8 @@ namespace Buma.UI.Infrastructure
     public class SessionManager : ISessionManager
     {
         private readonly ISession _session;
+        private const string CartKey = "cart";
+        private const string KeyCustomerInfo = "customer-info";
 
         public SessionManager(IHttpContextAccessor http)
         {
@@ -20,7 +22,7 @@ namespace Buma.UI.Infrastructure
         public void AddProduct(CartProduct cartProduct)
         {
             var cartList = new List<CartProduct>();
-            var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
+            var stringObject = _session.GetString(CartKey);  // Get cart and deserialize the object
 
             if (!string.IsNullOrEmpty(stringObject))     // if cart isn't null
             {
@@ -46,7 +48,7 @@ namespace Buma.UI.Infrastructure
 
         public IEnumerable<TResult> GetCart<TResult>(Func<CartProduct, TResult> selector)
         {
-            var stringObject = _session.GetString("cart");
+            var stringObject = _session.GetString(CartKey);
 
             if (string.IsNullOrEmpty(stringObject))
                 return new List<TResult>();
@@ -66,7 +68,7 @@ namespace Buma.UI.Infrastructure
 
         public CustomerInformation GetCustomerInformation()
         {
-            var stringObject = _session.GetString("customer-info");
+            var stringObject = _session.GetString(KeyCustomerInfo);
 
             if (string.IsNullOrEmpty(stringObject))
                 return null;
@@ -85,7 +87,7 @@ namespace Buma.UI.Infrastructure
         public void RemoveProduct(int stockId, int qty)
         {
             var cartList = new List<CartProduct>();
-            var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
+            var stringObject = _session.GetString(CartKey);  // Get cart and deserialize the object
 
             if (string.IsNullOrEmpty(stringObject)) return;   // if cart isn't null
 
@@ -103,7 +105,12 @@ namespace Buma.UI.Infrastructure
             // convert the object to string
             stringObject = JsonConvert.SerializeObject(cartList);
 
-            _session.SetString("cart", stringObject);
+            _session.SetString(CartKey, stringObject);
+        }
+
+        public void ClearCart()
+        {
+            _session.Remove(CartKey);
         }
     }
 }

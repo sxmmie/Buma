@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.StockAdmin
 {
+    [Service]
     public class DeleteStock
     {
         private readonly IStockManager _stockManager;

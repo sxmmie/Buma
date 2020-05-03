@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class AddCustomerInfo
     {
         private readonly ISessionManager _sessionManager;

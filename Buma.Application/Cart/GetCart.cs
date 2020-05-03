@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class GetCart
     {
         private readonly ISessionManager _sessionManager;

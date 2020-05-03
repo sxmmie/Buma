@@ -2,6 +2,7 @@
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class GetCustomerInfo
     {
         private readonly ISessionManager _sessionManager;

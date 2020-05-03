@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Buma.Domain.Infrastructure;
-using Buma.Application.UsersAdmin;
 using Buma.Data;
 using Buma.UI.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -81,7 +77,6 @@ namespace Buma.UI
 
             StripeConfiguration.ApiKey = _config.GetSection("Stripe")["SecretKey"];
 
-            services.AddTransient<IStockManager, StockManager>();
             services.AddScoped<ISessionManager, SessionManager>();
 
             services.AddApplicationServices();

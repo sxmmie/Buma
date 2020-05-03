@@ -13,6 +13,7 @@ namespace Buma.Domain.Infrastructure
         void AddProduct(CartProduct cartProduct);
         void RemoveProduct(int stockId, int Qty);
         IEnumerable<TResult> GetCart<TResult>(Func<CartProduct, TResult> selector);
+        void ClearCart();
 
         void AddCustomerInformation(CustomerInformation customer);
         CustomerInformation GetCustomerInformation();

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Buma.Application.Cart;
 using Buma.Application.Orders;
 using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
@@ -34,7 +35,8 @@ namespace Buma.UI.Pages.Checkout
             }
         }
 
-        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken, [FromServices] GetOrderCart getOrder, [FromServices] CreateOrder createOrder)
+        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken, [FromServices] GetOrderCart getOrder,
+            [FromServices] CreateOrder createOrder, ISessionManager sessionManager)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
@@ -78,6 +80,8 @@ namespace Buma.UI.Pages.Checkout
                     Qty = x.Qty
                 }).ToList()
             });
+
+            sessionManager.ClearCart();
 
             return RedirectToPage("/Index");
         }

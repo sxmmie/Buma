@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.Products
 {
+    [Service]
     public class GetProducts
     {
         private readonly IProductManager _productManager;

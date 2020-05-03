@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.OrdersAdmin
 {
+    [Service]
     public class UpdateOrder
     {
         private readonly IOrderManager _orderManager;

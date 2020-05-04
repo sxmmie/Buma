@@ -25,18 +25,18 @@ namespace Buma.UI.Pages
 
         public GetProduct.ProductViewModel Product { get; set; }
 
-        public async Task<IActionResult> OnGet(string name)
+        public async Task<IActionResult> OnGet(string name, [FromServices] GetProduct getProduct)
         {
-            Product = await new GetProduct(_ctx).Do(name.Replace("-", " "));
+            Product = await getProduct.Do(name.Replace("-", " "));
             if (Product == null)
                 return RedirectToPage("Index");
             else
                 return Page();
         }
 
-        public async Task<IActionResult> OnPost()
+        public async Task<IActionResult> OnPost([FromServices] AddToCart addToCart)
         {
-            var stockAdded = await new AddToCart(HttpContext.Session, _ctx).Do(CartViewModel);
+            var stockAdded = await addToCart.Do(CartViewModel);
 
             if (stockAdded)
                 return RedirectToPage("Index");

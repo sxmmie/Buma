@@ -43,6 +43,8 @@ namespace Buma.Data.Migrations
 
                     b.Property<string>("PostCode");
 
+                    b.Property<int>("Status");
+
                     b.Property<string>("StripeReference");
 
                     b.HasKey("Id");
@@ -110,6 +112,8 @@ namespace Buma.Data.Migrations
                     b.Property<DateTimeOffset>("ExpiryDate");
 
                     b.Property<int>("Qty");
+
+                    b.Property<string>("SessionId");
 
                     b.Property<int>("StockId");
 

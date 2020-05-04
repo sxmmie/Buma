@@ -1,73 +1,45 @@
 ﻿using Buma.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using System;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Buma.Data;
+using Buma.Domain.Infrastructure;
+
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class AddToCart
     {
-        private readonly ISession _session;
-        private readonly ApplicationDbContext _ctx;
+        private readonly ISessionManager _sessionManager;
+        private readonly IStockManager _stockManager;
 
-        public AddToCart(ISession session, ApplicationDbContext ctx)
+        public AddToCart(ISessionManager sessionManager, IStockManager stockManager)
         {
-            _session = session;
-            _ctx = ctx;
+            _sessionManager = sessionManager;
+            _stockManager = stockManager;
         }
 
         public async Task<bool> Do(Request request)
         {
-            var stockOnHold = _ctx.Stocks.Where(x => x.Id == request.StockId).FirstOrDefault();
-
-            if(stockOnHold.Qty < request.Qty)
+            // service responsibiliity - {check the DB to see if we have enough stock}
+            // if stock available to us is less than the requested Qty, pop out.
+            if (!_stockManager.EnoughStock(request.StockId, request.Qty))
             {
                 return false;
             }
 
-            _ctx.StocksOnHold.Add(new StockOnHold
+            await _stockManager.PutStockOnHold(request.StockId, request.Qty, _sessionManager.GetId());
+
+            var stock = _stockManager.GetStockWithProduct(request.StockId);
+
+            var cartProduct = new CartProduct()
             {
-                StockId = stockOnHold.Id,
+                ProductId = stock.ProductId,
+                ProductName = stock.Product.Name,
+                StockId = stock.Id,
                 Qty = request.Qty,
-                ExpiryDate = DateTimeOffset.Now.AddMinutes(20)
-            });
+                Value = stock.Product.Value
+            };
 
-            stockOnHold.Qty = stockOnHold.Qty - request.Qty;
-
-            await _ctx.SaveChangesAsync();
-
-            var cartList = new List<CartProduct>();            
-            var stringObject = _session.GetString("cart");  // Get cart and deserialize the object
-
-            if (!string.IsNullOrEmpty(stringObject))     // if cart isn't null
-            {
-                cartList = JsonConvert.DeserializeObject<List<CartProduct>>(stringObject);  // set cart to what it is currently is
-            }
-
-            // if cart list has stock, 
-            if (cartList.Any(x => x.StockId == request.StockId))
-            {
-                cartList.Find(x => x.StockId == request.StockId).Qty += request.Qty;    // FInd stock item and append Qty
-            }
-            else
-            {
-                // Otherwise add CartProduct to cartList
-                cartList.Add(new CartProduct
-                {
-                    StockId = request.StockId,
-                    Qty = request.Qty
-                });
-            }
-
-            // convert the object to string
-            stringObject = JsonConvert.SerializeObject(cartList);
-
-            _session.SetString("cart", stringObject);
+            _sessionManager.AddProduct(cartProduct);
 
             return true;
         }

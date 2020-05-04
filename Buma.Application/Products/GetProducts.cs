@@ -1,4 +1,4 @@
-﻿using Buma.Data;
+﻿using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,26 +7,24 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.Products
 {
+    [Service]
     public class GetProducts
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IProductManager _productManager;
 
-        public GetProducts(ApplicationDbContext ctx)
+        public GetProducts(IProductManager productManager)
         {
-            _ctx = ctx;
+            _productManager = productManager;
         }
 
         public IEnumerable<ProductViewModel> Do()
         {
-            return _ctx.Products.ToList().Select(x =>
+            return _productManager.GetProductsWithStock(x => new ProductViewModel
             {
-                var v = $"$ {x.Value.ToString("2")}";
-                return new ProductViewModel
-                {
-                    Name = x.Name,
-                    Description = x.Description,
-                    Value = v
-                };
+                Name = x.Name,
+                Description = x.Description,
+                Value = x.Value.GetValueString(),        // 1100.50 => 1,000.50 => 1,000.50
+                StockCount = x.Stock.Sum(y => y.Qty)
             });
         }
 
@@ -35,6 +33,7 @@ namespace Buma.Application.Products
             public string Name { get; set; }
             public string Description { get; set; }
             public string Value { get; set; }
+            public int StockCount { get; set; }   // 10 or below
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Buma.Data;
+﻿
+using Buma.Domain.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,23 +8,19 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.StockAdmin
 {
+    [Service]
     public class DeleteStock
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IStockManager _stockManager;
 
-        public DeleteStock(ApplicationDbContext ctx)
+        public DeleteStock(IStockManager stockManager)
         {
-            _ctx = ctx;
+            _stockManager = stockManager;
         }
 
-        public async Task<bool> Do(int id)
+        public Task<int> Do(int id)
         {
-            var stock = _ctx.Stocks.FirstOrDefault(x => x.Id == id);
-            _ctx.Stocks.Remove(stock);
-
-            await _ctx.SaveChangesAsync();
-
-            return true;
+            return _stockManager.DeleteStock(id);
         }
     }
 }

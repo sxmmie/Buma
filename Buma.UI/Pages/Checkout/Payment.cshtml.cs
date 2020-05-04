@@ -5,27 +5,27 @@ using System.Threading.Tasks;
 using Buma.Application.Cart;
 using Buma.Application.Orders;
 using Buma.Data;
+using Buma.Domain.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Configuration;
 using Stripe;
+using GetOrderCart = Buma.Application.Cart.GetOrder;
 
 namespace Buma.UI.Pages.Checkout
 {
     public class PaymentModel : PageModel
     {
-        private readonly ApplicationDbContext _ctx;
         public string PublicKey { get; set; }
 
-        public PaymentModel(IConfiguration config, ApplicationDbContext ctx)
+        public PaymentModel(IConfiguration config)
         {
             PublicKey = config["Stripe:PublicKey"].ToString();
-            _ctx = ctx;
         }
 
-        public IActionResult OnGet()
+        public IActionResult OnGet([FromServices] GetCustomerInfo getCustomerInfo)
         {
-            var information = new GetCustomerInfo(HttpContext.Session).Do();
+            var information = getCustomerInfo.Do();
 
             if (information == null)
                 return RedirectToPage("/Checkout/CustomerInformation");
@@ -35,12 +35,13 @@ namespace Buma.UI.Pages.Checkout
             }
         }
 
-        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken)
+        public async Task<IActionResult> OnPost(string stripeEmail, string stripeToken, [FromServices] GetOrderCart getOrder,
+            [FromServices] CreateOrder createOrder, ISessionManager sessionManager)
         {
             var customers = new CustomerService();
             var charges = new ChargeService();
 
-            var CartOrder = new Application.Cart.GetOrder(HttpContext.Session, _ctx).Do();
+            var cartOrder = getOrder.Do();
 
             var customer = customers.Create(new CustomerCreateOptions
             {
@@ -50,32 +51,37 @@ namespace Buma.UI.Pages.Checkout
 
             var charge = charges.Create(new ChargeCreateOptions
             {
-                Amount = CartOrder.GetGetTotalCharge(),
+                Amount = cartOrder.GetGetTotalCharge(),
                 Description = "Buma Purchase",
                 Currency = "usd",
                 Customer = customer.Id
             });
 
+            var sessionId = HttpContext.Session.Id;
+
             // create order
-            await new CreateOrder(_ctx).Do(new CreateOrder.Request
+            await createOrder.Do(new CreateOrder.Request
             {
                 StripeReference = charge.Id,
+                SessionId = sessionId,
 
-                FirstName = CartOrder.CustomerInformation.FirstName,
-                LastName = CartOrder.CustomerInformation.LastName,
-                Email = CartOrder.CustomerInformation.Email,
-                PhoneNumber = CartOrder.CustomerInformation.PhoneNumber,
-                Address1 = CartOrder.CustomerInformation.Address1,
-                Address2 = CartOrder.CustomerInformation.Address2,
-                City = CartOrder.CustomerInformation.City,
-                PostCode = CartOrder.CustomerInformation.PostCode,
+                FirstName = cartOrder.CustomerInformation.FirstName,
+                LastName = cartOrder.CustomerInformation.LastName,
+                Email = cartOrder.CustomerInformation.Email,
+                PhoneNumber = cartOrder.CustomerInformation.PhoneNumber,
+                Address1 = cartOrder.CustomerInformation.Address1,
+                Address2 = cartOrder.CustomerInformation.Address2,
+                City = cartOrder.CustomerInformation.City,
+                PostCode = cartOrder.CustomerInformation.PostCode,
 
-                Stocks = CartOrder.Products.Select(x => new CreateOrder.Stock
+                Stocks = cartOrder.Products.Select(x => new CreateOrder.Stock
                 {
                     StockId = x.StockId,
                     Qty = x.Qty
                 }).ToList()
             });
+
+            sessionManager.ClearCart();
 
             return RedirectToPage("/Index");
         }

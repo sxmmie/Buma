@@ -11,16 +11,21 @@ namespace Buma.UI.ViewComponents
 {
     public class CartViewComponent : ViewComponent
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly GetCart _getCart;
 
-        public CartViewComponent(ApplicationDbContext ctx)
+        public CartViewComponent(GetCart getCart)
         {
-            _ctx = ctx;
+            _getCart = getCart;
         }
 
-        public IViewComponentResult Invoke()
+        public IViewComponentResult Invoke([FromServices] GetCart getCart, string view = "Default")
         {
-            return View(new GetCart(HttpContext.Session, _ctx).Do());
+            if (view == "small")
+            {
+                var totalValue = _getCart.Do().Sum(x => x.RealValue * x.Qty);
+                return View(view, $"${totalValue}");
+            }
+            return View(_getCart.Do());
         }
     }
 }

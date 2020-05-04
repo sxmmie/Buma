@@ -4,15 +4,59 @@
     ViewData["Title"] = "Home page";
 }
 
-<div>
-    @{
-        foreach (var p in Model.Products)
-        {
-            <a asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
-                <p>@p.Name - @p.Description - @p.Value</p>
-            </a>
-        }
-    }
-</div>
+    <div class="section">
+        <div class="columns is-multiline is-mobile">
+            @{
+                for (var i = 0; i < 5; i++)
+                {
+                    foreach (var p in Model.Products)
+                    {
+                        <div class="column is-3-desktop is-4-tablet is-6-mobile">
+                            <a asp-page="Product" asp-route-name="@p.Name.Replace(" ", "-")">
+                                <div class="card">
+                                    <div class="card-image">
+                                        <figure class="image is-4by3">
+                                            <img src="~/images/m1-black-new.jpg" />
+                                            @*<img src="https://bulma.io/images/placeholders/1280x960.png" alt="Placeholder image">*@
+                                        </figure>
+                                    </div>
+                                    <div class="card-content">
+                                        <p class="title">
+                                            @p.Name @p.Value
+                                        </p>
+                                        <p class="title is-size-6">
+                                            @p.Description
+                                        </p>
 
-@await Component.InvokeAsync("Cart")
+                                        @{
+                                            string message = "";
+                                            string cssClass = "";
+
+                                            if (p.StockCount == 0)
+                                            {
+                                                cssClass = "is-danger";
+                                                message = "Out of stock";
+                                            }
+                                            else if (p.StockCount <= 10)
+                                            {
+                                                cssClass = "is-warning";
+                                                message = "Low on stock";
+                                            }
+                                        }
+
+                                        @if (p.StockCount <= 10)
+                                        {
+                                            <div class="notification is-paddingless has-text-centered @cssClass">
+                                                @message
+                                            </div>
+                                        }
+
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                }
+            }
+        </div>
+    </div>

@@ -1,5 +1,6 @@
-﻿using Buma.Data;
-using Microsoft.EntityFrameworkCore;
+﻿
+using Buma.Domain.Infrastructure;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,53 +9,35 @@ using System.Threading.Tasks;
 
 namespace Buma.Application.Products
 {
+    [Service]
     public class GetProduct
     {
-        private readonly ApplicationDbContext _ctx;
+        private readonly IProductManager _productManager;
+        private readonly IStockManager _stockManager;
 
-        public GetProduct(ApplicationDbContext ctx)
+        public GetProduct(IProductManager productManager, IStockManager stockManager)
         {
-            _ctx = ctx;
+            _productManager = productManager;
+            _stockManager = stockManager;
         }
 
         public async Task<ProductViewModel> Do(string name)
         {
-            var stocksOnHold = _ctx.StocksOnHold.Where(x => x.ExpiryDate <= DateTimeOffset.Now).ToList();
+            await _stockManager.RetrieveExpiredStockOnHold();
 
-            if (stocksOnHold.Count > 0)
+            return _productManager.GetProductByName(name, x => new ProductViewModel
             {
-                // Remove stock and put it back into our actual stock
-                var stockToReturn = _ctx.Stocks.Where(x => stocksOnHold.Any(y => y.StockId == x.Id)).ToList();
+                Name = x.Name,
+                Description = x.Description,
+                Value = x.Value.GetValueString(),
 
-                foreach(var stock in stockToReturn)
+                Stock = x.Stock.Select(y => new StockViewModel
                 {
-                    // restore Qty
-                    stock.Qty = stock.Qty + stocksOnHold.FirstOrDefault(x => x.StockId == stock.Id).Qty;
-                }
-
-                // Go to the StocksOnHold and remove stock
-                _ctx.StocksOnHold.RemoveRange(stocksOnHold);
-
-                await _ctx.SaveChangesAsync();
-            }
-
-            return _ctx.Products
-                .Include(x => x.Stock)
-                .Where(x => x.Name == name)
-                .Select(x => new ProductViewModel
-                {
-                    Name = x.Name,
-                    Description = x.Description,
-                    Value = $"$ {x.Value.ToString("2")}",
-
-                    Stock = x.Stock.Select(y => new StockViewModel
-                    {
-                        Id = y.Id,
-                        Description = y.Description,
-                        InStock = y.Qty > 0
-                    })
+                    Id = y.Id,
+                    Description = y.Description,
+                    Qty = y.Qty
                 })
-             .FirstOrDefault();
+            });
         }
 
         public class ProductViewModel
@@ -69,7 +52,7 @@ namespace Buma.Application.Products
         {
             public int Id { get; set; }
             public string Description { get; set; }
-            public bool InStock { get; set; }
+            public int Qty { get; set; }
         }
     }
 }

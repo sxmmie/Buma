@@ -1,17 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Buma.Domain.Infrastructure;
 using Buma.Data;
+using Buma.UI.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Stripe;
+using FluentValidation.AspNetCore;
 
 namespace Buma.UI
 {
@@ -28,6 +29,8 @@ namespace Buma.UI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddHttpContextAccessor();
+
             services.Configure<CookiePolicyOptions>(options =>
             {
                 // This lambda determines whether user consent for non-essential cookies is needed for a given request.
@@ -37,7 +40,36 @@ namespace Buma.UI
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(_config["DefaultConnection"]));
 
-            services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
+            services.AddIdentity<IdentityUser, IdentityRole>(options =>
+            {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            }).AddEntityFrameworkStores<ApplicationDbContext>();
+
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+            });
+
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("Admin", policy => policy.RequireClaim("Role", "Admin"));
+                //options.AddPolicy("Manager", policy => policy.RequireClaim("Role", "Manager"));
+                options.AddPolicy("Manager", policy => policy
+                    .RequireAssertion(context => context.User.HasClaim("Role", "Manager") || context.User.HasClaim("Role", "Admin")));
+            });
+
+            services
+                .AddMvc()
+                .AddRazorPagesOptions(options =>
+                {
+                    options.Conventions.AuthorizeFolder("/Admin");
+                    options.Conventions.AuthorizePage("/Admin/ConfigureUsers", "Admin");
+                })
+                .SetCompatibilityVersion(CompatibilityVersion.Version_2_1)
+                .AddFluentValidation(x => x.RegisterValidatorsFromAssembly(typeof(Startup).Assembly));  // register validation rules
 
             services.AddSession(options => 
             {
@@ -46,6 +78,10 @@ namespace Buma.UI
             });
 
             StripeConfiguration.ApiKey = _config.GetSection("Stripe")["SecretKey"];
+
+            services.AddScoped<ISessionManager, SessionManager>();
+
+            services.AddApplicationServices();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -67,7 +103,9 @@ namespace Buma.UI
 
             app.UseSession();
 
-            app.UseMvc();
+            app.UseAuthentication();
+
+            app.UseMvcWithDefaultRoute();
         }
     }
 }

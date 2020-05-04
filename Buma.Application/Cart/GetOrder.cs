@@ -1,50 +1,33 @@
-﻿using Buma.Data;
-using Buma.Domain.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
+﻿using Buma.Domain.Infrastructure;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Buma.Application.Cart
 {
+    [Service]
     public class GetOrder
     {
-        private readonly ISession _session;
-        private readonly ApplicationDbContext _ctx;
+        private readonly ISessionManager _sessionManager;
 
-        public GetOrder(ISession session, ApplicationDbContext ctx)
+        public GetOrder(ISessionManager sessionManager)
         {
-            _session = session;
-            _ctx = ctx;
+            _sessionManager = sessionManager;
         }
 
         public Response Do()
         {
             // TODO: Account for multiple items in the cart
+            var listOfProducts = _sessionManager.GetCart(x => new Product
+            {
+                ProductId = x.ProductId,
+                StockId = x.StockId,
+                Value = (int)(x.Value * 100),
+                Qty = x.Qty
+            });
 
-            var cart = _session.GetString("cart");
-
-            var cartList = JsonConvert.DeserializeObject<List<CartProduct>>(cart);
-
-            // create collection of products for order information
-            var listOfProducts = _ctx.Stocks
-                .Include(x => x.Product)
-                .Where(x => cartList.Any(y => y.StockId == x.Id))
-                .Select(x => new Product
-                {
-                    ProductId = x.ProductId,
-                    StockId = x.Id,
-                    Value = (int) (x.Product.Value * 100),
-                    Qty = cartList.FirstOrDefault(y => y.StockId == x.Id).Qty
-                }).ToList();
-
-            var customerInfoString = _session.GetString("customer-info");
-
-            var cusotmerInformation = JsonConvert.DeserializeObject<CustomerInformation>(customerInfoString);
+            var cusotmerInformation = _sessionManager.GetCustomerInformation();
 
             return new Response
             {

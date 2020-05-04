@@ -3,16 +3,66 @@
 @{
 }
 
-    <div>
-        @foreach (var product in Model.Cart)
-        {
-            <p>@product.Name</p>
-            <p>@product.Value</p>
-            <p>@product.Qty</p>
-            <p>@product.StockId</p>
-            <hr />
+<div class="container">
+    <div class="columns">
+        <partial name="_CartPartial" model="@Model.Cart" />
+    </div>
+</div>
+
+@section scripts {
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script>
+        var addOneToCart = function (e) {
+            var stockId = e.target.dataset.stockId;
+            axios.post("/Cart/AddOne/" + stockId)
+                .then(res => {
+                    updateCart();
+                })
+                .catch(err => {
+                    alert(err.error)
+                });
         }
 
-    </div>
+        var removeOneFromCart = function (e) {
+            var stockId = e.target.dataset.stockId;
+            removeFromCart(stockId, 1);
+        }
 
-<vc:cart view="Small"></vc:cart>
+        var removeAllFromCart = function (e) {
+            var stockId = e.target.dataset.stockId;
+            var id = "stock-qty-" + stockId;
+            el = document.getElementById(id);
+            var qty = parseInt(el.innerText);
+            removeFromCart(stockId, qty);
+        }
+
+        var removeFromCart = function (stockId, qty) {
+            var stockId = e.target.dataset.stockId;
+            axios.post("/Cart/Remove/" + stockId + '/' + qty)
+                .then(res => {
+                    updateCart();
+                })
+                .catch(err => {
+                    alert(err.error)
+                });
+        }
+
+        var updateCart = function () {
+            axios.get('/Cart/GetCartComponent')
+                .then(res => {
+                    var html = res.data;
+                    var el = document.getElementById('cart-nav');
+
+                    el.outerHTML = html;
+                });
+
+            axios.get('/Cart/GetCartMain')
+                .then(res => {
+                    var html = res.data;
+                    var el = document.getElementById('cart-main');
+
+                    el.outerHTML = html;
+                })
+        }
+    </script>
+}

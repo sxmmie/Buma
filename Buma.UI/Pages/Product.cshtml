@@ -3,26 +3,113 @@
 @{
 }
 
-<div>
-    <p>@Model.Product.Name</p>
-    <p>@Model.Product.Description</p>
-    <p>@Model.Product.Value</p>
-    <div>
-        <form method="post">
-            <label>Stock</label>
-            <select asp-for="CartViewModel.StockId">
-                @foreach (var s in Model.Product.Stock)
-                {
-                    <option value="@s.Id">@s.Description</option>
-                }
-            </select>
-            <label>Qty:</label>
-            <input asp-action="CartModelView.Qty" />
-            <button type="submit">Submit</button>
-        </form>
+<div class="hero">
+    <div class="hero-body">
+        <div class="container">
+            <div class="columns">
+                <div column class="is-6">
+                    <figure class="image is-1by1">
+                        <img src="~/images/m1-black-new.jpg" />
+                    </figure>
+                </div>
+                <div class="column is-6">
+                    <section class="">
+                        <p class="title">@Model.Product.Name</p>
+                        <p class="subtitle">@Model.Product.Description</p>
+                        <p>
+                            There are many variations of passages of Lorem Ipsum available, but the majority have suffered alteration in some form, by injected humour, or randomised words which don't look even slightly believable. If you are going to use a passage of Lorem Ipsum, you need to be sure there isn't anything embarrassing hidden in the middle of text. All the Lorem Ipsum generators on the Internet tend to repeat predefined chunks as necessary, making this the first true generator on the Internet. It uses a dictionary of over 200 Latin words, combined with a handful of model sentence structures, to generate Lorem Ipsum which looks reasonable. The generated Lorem Ipsum is therefore always free from repetition, injected humour, or non-characteristic words etc.
+                        </p>
+                        <footer>
+                            <form method="post">
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-normal">
+                                        <label class="label">Size</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field-label is-narrow">
+                                            <div class="control">
+                                                <div class="select is-fullwidth">
+                                                    <select asp-for="CartViewModel.StockId" onchange="toggleStock(event)">
+                                                        @foreach (var s in Model.Product.Stock)
+                                                        {
+                                                            bool disabled = s.Qty <= 0;
+
+                                                            <option value="@s.Id" disabled="@disabled">@s.Description</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-normal">
+                                        <label class="label">Qty</label>
+                                    </div>
+                                    <div class="field-body">
+                                        <div class="field-label is-narrow">
+                                            <div class="control">
+                                                <input class="input" asp-action="CartModelView.Qty" value="1" />
+                                            </div>
+                                            @foreach (var stock in Model.Product.Stock)
+                                            {
+                                                <p class="is-danger is-0-hidden low-stock" id="low-stock-@stock.Id">
+                                                    @(stock.Qty == 0 ? "Out of stock" : $"{stock.Qty} left")
+                                                </p>
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="field is-horizontal">
+                                    <div class="field-label is-normal"></div>
+                                    <div class="field-body">
+                                        <div class="field-label is-narrow">
+                                            <div class="control">
+                                                <button class="button" type="submit">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </footer>
+                    </section>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
+<div>
+    
+    <p>@Model.Product.Value</p>
+    <div>
+        
+    </div>
+</div>
+
+<script>
+    var toggleStock = function (e) {
+        console.log(e);
+
+        var stockToHide = document.querySelectorAll('.low-stock');
+        stockToHide.forEach(function () {
+            e.classList.add('is-hidden');
+        })
+
+        showLowStock = e.target.value;
+    }
+
+    var showLowStock = function (id) {
+        var stockToShow = document.getElementById('low-stock-' + id);
+        if (stockToShow != null && stockToShow == undefined) {
+            stockToShow.classList.remove('is-hidden');
+        }          
+    }
+
+    var showLowStock(document.getElementById('CartViewModel_StockId').value);
+</script>
+
 @*<vc:cart view="Cart"></vc:cart>*@
 
-@await Component.InvokeAsync("Cart")
+@*await Component.InvokeAsync("Cart")*@
